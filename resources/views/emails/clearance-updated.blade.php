@@ -73,18 +73,6 @@
             color: #374151;
         }
 
-        .cta {
-            display: inline-block;
-            margin-top: 10px;
-            background-color: #FFC72C;
-            color: #0F1B2D !important;
-            font-weight: 700;
-            padding: 12px 22px;
-            border-radius: 8px;
-            text-decoration: none;
-            font-size: 0.9rem;
-        }
-
         .footer {
             padding: 18px 28px;
             border-top: 1px solid #E5E7EB;
@@ -104,7 +92,7 @@
 
             @if ($clearanceItem->status === 'cleared')
                 <p>
-                    Good news — the <strong>{{ $clearanceItem->department->name }}</strong> office has marked your clearance as
+                    Good news: the <strong>{{ $clearanceItem->department->name }}</strong> office has marked your clearance as
                     <span class="status-badge cleared">Cleared</span>
                     for {{ $clearanceItem->schoolYear->year_label ?? 'the current school year' }}.
                 </p>
@@ -121,9 +109,7 @@
                 @endif
             @endif
 
-            <p>You can check your full clearance status anytime by logging into your dashboard.</p>
-
-            <a href="{{ route('login') }}" class="cta">View My Clearance Status</a>
+            <p>You can check your full clearance status anytime by logging in to the Digital Clearance System with your school account.</p>
         </div>
 
         <div class="footer">
