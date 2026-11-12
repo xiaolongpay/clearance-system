@@ -5,3 +5,6 @@
 /.git
 /.env
 /.env.*
+/public/index.php
+/public/phpinfo.php
+/public/.htaccess
