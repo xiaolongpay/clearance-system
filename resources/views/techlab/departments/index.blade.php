@@ -139,7 +139,7 @@
                             <td class="email-cell">{{ $department->email }}</td>
                             <td>
                                 @if ($department->signature_path)
-                                    <img src="{{ asset('storage/' . $department->signature_path) }}" alt="Signature" class="signature-thumb">
+                                    <img src="{{ $department->signatureDataUri() }}" alt="Signature" class="signature-thumb">
                                 @else
                                     <span class="signature-none">None</span>
                                 @endif

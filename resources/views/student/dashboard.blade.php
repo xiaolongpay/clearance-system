@@ -729,7 +729,7 @@
                                 <td class="signature-col">
                                     @if ($item->status === 'cleared' && $item->department->signature_path)
                                         <div class="signature-cell">
-                                            <img class="signature-img" src="{{ asset('storage/' . $item->department->signature_path) }}" alt="Signature">
+                                            <img class="signature-img" src="{{ $item->department->signatureDataUri() }}" alt="Signature">
                                         </div>
                                     @endif
                                 </td>

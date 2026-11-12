@@ -136,7 +136,7 @@
                 <label>Current Signature</label>
                 <div class="signature-preview">
                     @if ($department->signature_path)
-                        <img src="{{ asset('storage/' . $department->signature_path) }}" alt="Current signature">
+                        <img src="{{ $department->signatureDataUri() }}" alt="Current signature">
                     @else
                         <p class="signature-none">No signature uploaded yet.</p>
                     @endif
