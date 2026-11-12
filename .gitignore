@@ -5,10 +5,12 @@
 /public/storage
 /storage/*.key
 /storage/pail
+/storage/*-backup
 /vendor
 .env
 .env.backup
 .env.production
+.env.tidb
 .phpactor.json
 .phpunit.result.cache
 Homestead.json
@@ -20,4 +22,6 @@ yarn-error.log
 /.idea
 /.nova
 /.vscode
-/.zed
+/.zedoffices-list.txt
+copy-offices.php
+list-offices.php

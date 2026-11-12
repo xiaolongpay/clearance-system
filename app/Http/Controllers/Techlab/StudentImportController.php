@@ -119,7 +119,7 @@ class StudentImportController extends Controller
 
             // Generate a clearance item for every department, if it doesn't exist yet
             foreach ($departments as $department) {
-                ClearanceItem::firstOrCreate([
+                ClearanceItem::createOrFirst([
                     'student_id' => $student->id,
                     'department_id' => $department->id,
                     'school_year_id' => $activeSchoolYear->id,
