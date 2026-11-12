@@ -343,16 +343,76 @@
         .welcome-period strong {
             color: #fff;
         }
+
+        /* --- Phone held upright: big greeting on top, the whole photo along the bottom edge --- */
+
+        @media (max-aspect-ratio: 1/1) and (max-width: 1000px) {
+            .hero {
+                flex-direction: column;
+            }
+
+            .hero-panel,
+            :root:not([data-theme="dark"]) .hero-panel {
+                width: 100%;
+                flex: 1;
+                justify-content: center;
+                padding: 48px 48px;
+                border-right: 0;
+            }
+
+            [data-theme="dark"] .hero-panel {
+                background:
+                    radial-gradient(circle at 12% 18%, rgba(255, 199, 44, 0.12), transparent 48%),
+                    var(--bg-navy);
+            }
+
+            :root:not([data-theme="dark"]) .hero-panel {
+                border-bottom: 1px solid #E5E7EB;
+            }
+
+            .welcome-heading {
+                font-size: 2.5rem;
+                margin-bottom: 8px;
+            }
+
+            .welcome-heading .user-name {
+                font-size: 4.6rem;
+                line-height: 1.05;
+                margin-top: 6px;
+            }
+
+            .welcome-role {
+                font-size: 2.6rem;
+                margin-top: 16px;
+            }
+
+            .welcome-period {
+                font-size: 2.2rem;
+                line-height: 1.3;
+                margin-top: 22px;
+            }
+
+            .hero-image {
+                width: 100%;
+                flex: none;
+            }
+
+            .hero-image img {
+                height: auto;
+                object-fit: contain;
+            }
+        }
     </style>
+    <link rel="stylesheet" href="{{ asset('css/phone-scaled.css') }}">
+    <script src="{{ asset('js/phone-scaled.js') }}" defer></script>
 </head>
 <body>
     <div class="navbar">
         <div class="navbar-brand">
-            <img src="{{ asset('images/sti_val_logo.png') }}" alt="STI Valencia Logo">
+            <a href="{{ auth('student')->check() ? route('student.dashboard') : route('staff.dashboard') }}" title="Go to dashboard" style="display:block;"><img src="{{ asset('images/sti_val_logo.png') }}" alt="STI Valencia Logo"></a>
         </div>
 
         <div class="navbar-links">
-            <a href="{{ route('staff.dashboard') }}" class="nav-link active">Dashboard</a>
             <a href="{{ route('staff.clearance.index') }}" class="nav-link">Clearance Approvals</a>
             <a href="{{ route('account.edit') }}" class="nav-link">Account Settings</a>
 
@@ -368,6 +428,7 @@
                         <a href="{{ route('techlab.students.import.create') }}">Import Students</a>
                         <a href="{{ route('techlab.students.index') }}">Manage Students</a>
                         <a href="{{ route('techlab.school-years.index') }}">School Years</a>
+                        <a href="{{ route('techlab.audit-logs.index') }}">Audit Log</a>
                     </div>
                 </div>
             @endif

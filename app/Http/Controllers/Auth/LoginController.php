@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\AuditLog;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
@@ -50,6 +52,8 @@ class LoginController extends Controller
 
             $user = Auth::guard('web')->user();
 
+            AuditLog::record('auth.login', null, 'Staff sign-in');
+
             if ($user->must_change_password) {
                 return redirect()->route('password.force-change');
             }
@@ -72,6 +76,11 @@ class LoginController extends Controller
             return redirect()->intended(route('student.dashboard'));
         }
 
+        // Only failed sign-ins on a staff account are worth recording
+        if (User::where('email', $credentials['email'])->exists()) {
+            AuditLog::record('auth.login_failed', null, 'Wrong password', $credentials['email']);
+        }
+
         RateLimiter::hit($throttleKey, 180);
 
         return back()->withErrors([
@@ -85,6 +94,7 @@ class LoginController extends Controller
     public function logout(Request $request)
     {
         if (Auth::guard('web')->check()) {
+            AuditLog::record('auth.logout', null, 'Staff sign-out');
             Auth::guard('web')->logout();
         }
 

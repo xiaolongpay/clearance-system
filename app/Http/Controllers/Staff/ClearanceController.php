@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Staff;
 
 use App\Http\Controllers\Controller;
 use App\Mail\ClearanceUpdated;
+use App\Models\AuditLog;
 use App\Models\ClearanceItem;
 use App\Models\SchoolYear;
 use App\Models\Student;
@@ -86,9 +87,17 @@ class ClearanceController extends Controller
             'signed_at' => now(),
         ]);
 
-        $this->sendClearanceEmail($clearanceItem);
+        $emailed = $this->sendClearanceEmail($clearanceItem);
 
-        return back()->with('success', 'Student marked as cleared.');
+        AuditLog::record(
+            'clearance.cleared',
+            $this->describe($clearanceItem),
+            $emailed ? 'Email notification sent' : 'Email notification could not be sent'
+        );
+
+        return back()->with('success', $emailed
+            ? 'Student marked as cleared and notified by email.'
+            : 'Student marked as cleared, but the email notification could not be sent.');
     }
 
     /**
@@ -100,12 +109,20 @@ class ClearanceController extends Controller
 
         abort_if($clearanceItem->department_id !== $user->department_id, 403);
 
+        $previousStatus = $clearanceItem->status;
+
         $clearanceItem->update([
             'status' => 'pending',
             'remarks' => null,
             'signed_by' => null,
             'signed_at' => null,
         ]);
+
+        AuditLog::record(
+            'clearance.reverted',
+            $this->describe($clearanceItem),
+            "Changed from {$previousStatus} back to pending"
+        );
 
         return back()->with('success', 'Status reverted to pending.');
     }
@@ -130,27 +147,53 @@ class ClearanceController extends Controller
             'signed_at' => now(),
         ]);
 
-        $this->sendClearanceEmail($clearanceItem);
+        $emailed = $this->sendClearanceEmail($clearanceItem);
 
-        return back()->with('success', 'Student marked as rejected.');
+        AuditLog::record(
+            'clearance.rejected',
+            $this->describe($clearanceItem),
+            'Reason: ' . $validated['remarks'] . '. '
+                . ($emailed ? 'Email notification sent.' : 'Email notification could not be sent.')
+        );
+
+        return back()->with('success', $emailed
+            ? 'Student marked as rejected and notified by email.'
+            : 'Student marked as rejected, but the email notification could not be sent.');
+    }
+
+    /**
+     * A readable label for the audit log, for example
+     * "Villarba, Faith (370758) - Cashier".
+     */
+    private function describe(ClearanceItem $clearanceItem): string
+    {
+        $clearanceItem->loadMissing(['student', 'department']);
+
+        $student = $clearanceItem->student;
+
+        return "{$student->last_name}, {$student->first_name} ({$student->student_number}) - {$clearanceItem->department->name}";
     }
 
     /**
      * Send the clearance update email to the student, without blocking
      * the request if mail fails for any reason.
      */
-    private function sendClearanceEmail(ClearanceItem $clearanceItem): void
+    private function sendClearanceEmail(ClearanceItem $clearanceItem): bool
     {
         $clearanceItem->load(['student', 'department', 'schoolYear']);
 
         if (! $clearanceItem->student?->email) {
-            return;
+            return false;
         }
 
         try {
             Mail::to($clearanceItem->student->email)->send(new ClearanceUpdated($clearanceItem));
+
+            return true;
         } catch (\Throwable $e) {
             report($e);
+
+            return false;
         }
     }
 }

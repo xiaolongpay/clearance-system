@@ -15,6 +15,7 @@ class Department extends Model
         'email',
         'default_password',
         'signature_path',
+        'requirements',
         'is_techlab',
         'is_registrar',
     ];
@@ -32,5 +33,23 @@ class Department extends Model
     public function clearanceItems()
     {
         return $this->hasMany(ClearanceItem::class);
+    }
+
+    /**
+     * The signature image of the office, which is kept in the database.
+     */
+    public function signature()
+    {
+        return $this->hasOne(DepartmentSignature::class);
+    }
+
+    /**
+     * The signature as a data address, which the PDF form can embed without reading a file.
+     */
+    public function signatureDataUri(): ?string
+    {
+        $signature = $this->signature;
+
+        return $signature ? 'data:' . $signature->mime . ';base64,' . $signature->data : null;
     }
 }

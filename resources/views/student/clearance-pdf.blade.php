@@ -71,7 +71,7 @@
                     <td>{{ $item->department->officer_name }}</td>
                     <td>
                         @if ($item->status === 'cleared' && $item->department->signature_path)
-                            <img class="signature-img" src="{{ storage_path('app/public/' . $item->department->signature_path) }}">
+                            <img class="signature-img" src="{{ $item->department->signatureDataUri() }}">
                         @endif
                     </td>
                     <td>

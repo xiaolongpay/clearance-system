@@ -6,20 +6,23 @@ use App\Http\Controllers\Registrar\ClearanceStatusController;
 use App\Http\Controllers\Staff\ClearanceController;
 use App\Http\Controllers\Student\ClearancePdfController;
 use App\Http\Controllers\Student\DashboardController;
+use App\Http\Controllers\Techlab\AuditLogController;
 use App\Http\Controllers\Techlab\DepartmentController;
 use App\Http\Controllers\Techlab\SchoolYearController;
 use App\Http\Controllers\Techlab\StudentController;
 use App\Http\Controllers\Techlab\StudentImportController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Home: send everyone straight to the login page
+Route::redirect('/', '/login');
 
 // Login (shared page for students and staff)
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+// Privacy notice (public, linked from the login page)
+Route::view('/privacy', 'privacy')->name('privacy');
 
 // Staff dashboard
 Route::middleware('auth:web')->get('/staff/dashboard', function () {
@@ -71,6 +74,8 @@ Route::middleware(['auth:web', 'techlab'])->prefix('techlab')->name('techlab.')-
     Route::post('school-years', [SchoolYearController::class, 'store'])->name('school-years.store');
     Route::post('school-years/{schoolYear}/activate', [SchoolYearController::class, 'activate'])->name('school-years.activate');
     Route::delete('school-years/{schoolYear}', [SchoolYearController::class, 'destroy'])->name('school-years.destroy');
+
+    Route::get('audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
 });
 
 // Forced password change reuses the same account settings page

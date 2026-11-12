@@ -480,15 +480,16 @@
             font-size: 0.82rem;
         }
     </style>
+    <link rel="stylesheet" href="{{ asset('css/phone-scaled.css') }}">
+    <script src="{{ asset('js/phone-scaled.js') }}" defer></script>
 </head>
 <body>
     <div class="navbar">
         <div class="navbar-brand">
-            <img src="{{ asset('images/sti_val_logo.png') }}" alt="STI Valencia Logo">
+            <a href="{{ auth('student')->check() ? route('student.dashboard') : route('staff.dashboard') }}" title="Go to dashboard" style="display:block;"><img src="{{ asset('images/sti_val_logo.png') }}" alt="STI Valencia Logo"></a>
         </div>
 
         <div class="navbar-links">
-            <a href="{{ route('staff.dashboard') }}" class="nav-link">Dashboard</a>
             <a href="{{ route('staff.clearance.index') }}" class="nav-link active">Clearance Approvals</a>
             <a href="{{ route('account.edit') }}" class="nav-link">Account Settings</a>
 
@@ -504,6 +505,7 @@
                         <a href="{{ route('techlab.students.import.create') }}">Import Students</a>
                         <a href="{{ route('techlab.students.index') }}">Manage Students</a>
                         <a href="{{ route('techlab.school-years.index') }}">School Years</a>
+                        <a href="{{ route('techlab.audit-logs.index') }}">Audit Log</a>
                     </div>
                 </div>
             @endif

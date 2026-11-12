@@ -1,0 +1,27 @@
+Environment variables to add in Vercel (Project > Settings > Environment Variables).
+Fill in the values on the right. Do NOT put real passwords in GitHub.
+
+APP_NAME=STI Valencia Clearance System
+APP_KEY=                      run on your laptop:  php artisan key:generate --show   (copy the whole base64:... value)
+APP_URL=                      your Vercel address, for example  https://your-project.vercel.app
+APP_TIMEZONE=Asia/Manila
+
+DB_CONNECTION=mysql
+DB_HOST=                      from TiDB Cloud > Connect
+DB_PORT=4000
+DB_DATABASE=                  for example  clearance
+DB_USERNAME=                  from TiDB Cloud (it looks like  xxxxxxxx.root)
+DB_PASSWORD=                  from TiDB Cloud
+
+SESSION_SECURE_COOKIE=true
+
+MAIL_MAILER=smtp
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=587
+MAIL_USERNAME=                the Gmail sender address
+MAIL_PASSWORD=                the NEW Gmail app password
+MAIL_ENCRYPTION=tls
+MAIL_FROM_ADDRESS=            the same Gmail sender address
+MAIL_FROM_NAME=STI Valencia Clearance System
+
+(APP_ENV, APP_DEBUG, SESSION_DRIVER, CACHE_STORE, LOG_CHANNEL and the cache paths are already set in vercel.json.)

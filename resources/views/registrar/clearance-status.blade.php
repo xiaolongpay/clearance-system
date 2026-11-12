@@ -397,15 +397,16 @@
             font-size: 0.82rem;
         }
     </style>
+    <link rel="stylesheet" href="{{ asset('css/phone-scaled.css') }}">
+    <script src="{{ asset('js/phone-scaled.js') }}" defer></script>
 </head>
 <body>
     <div class="navbar">
         <div class="navbar-brand">
-            <img src="{{ asset('images/sti_val_logo.png') }}" alt="STI Valencia Logo">
+            <a href="{{ auth('student')->check() ? route('student.dashboard') : route('staff.dashboard') }}" title="Go to dashboard" style="display:block;"><img src="{{ asset('images/sti_val_logo.png') }}" alt="STI Valencia Logo"></a>
         </div>
 
         <div class="navbar-links">
-            <a href="{{ route('staff.dashboard') }}" class="nav-link">Dashboard</a>
             <a href="{{ route('staff.clearance.index') }}" class="nav-link">Clearance Approvals</a>
             <a href="{{ route('registrar.clearance-status') }}" class="nav-link active">Full Clearance Status</a>
             <a href="{{ route('account.edit') }}" class="nav-link">Account Settings</a>

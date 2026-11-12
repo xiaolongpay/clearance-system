@@ -1,0 +1,83 @@
+/* =====================================================================
+   phone-nav.css  |  A readable top menu for the staff pages on a phone.
+
+   The staff pages show the desktop layout shrunk to fit a phone, which makes
+   the top menu tiny. On a phone held upright this makes the menu bigger while
+   keeping the same look and the same Techlab Admin dropdown (tap to open).
+   Nothing here applies on a computer.
+   ===================================================================== */
+
+@media (max-aspect-ratio: 1/1) and (max-width: 1000px) {
+
+    .navbar {
+        height: auto;
+        flex-wrap: wrap;
+        align-items: center;
+        padding: 20px 28px 0;
+        position: relative;
+    }
+
+    /* first row: logo on the left, theme button and Log Out on the right */
+    .navbar .navbar-brand img {
+        height: 78px;
+        margin-left: 0;
+    }
+
+    .navbar .navbar-right {
+        margin-left: auto;
+        gap: 22px;
+    }
+
+    .navbar .live-datetime {
+        display: none;
+    }
+
+    .navbar .theme-toggle {
+        width: 68px;
+        height: 68px;
+        font-size: 1.9rem;
+    }
+
+    .navbar .logout-btn {
+        padding: 18px 30px;
+        font-size: 1.8rem;
+        border-radius: 12px;
+    }
+
+    /* second row: the menu links, in the same style but larger */
+    .navbar .navbar-links {
+        order: 3;
+        flex: 0 0 calc(100% + 56px);
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        gap: 0 8px;
+        margin: 18px -28px 0;
+        padding: 0 28px;
+        border-top: 1px solid rgba(128, 128, 128, 0.28);
+    }
+
+    .navbar .nav-link {
+        font-size: 2rem;
+        padding: 28px 14px;
+    }
+
+    .navbar .nav-link::after {
+        left: 14px;
+        right: 14px;
+        height: 5px;
+    }
+
+    /* the dropdown opens under Techlab Admin when it is tapped, and stays inside the screen */
+    .navbar .nav-dropdown-menu {
+        left: auto;
+        right: 0;
+        min-width: 560px;
+        border-radius: 0 0 16px 16px;
+    }
+
+    .navbar .nav-dropdown-menu a {
+        font-size: 2rem;
+        padding: 30px 44px;
+        border-left-width: 6px;
+    }
+}

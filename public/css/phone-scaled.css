@@ -1,0 +1,145 @@
+/* =====================================================================
+   phone-scaled.css  |  Same web design on a phone, just readable.
+
+   The staff pages show the normal web design shrunk to fit a phone, which
+   makes the text tiny. On a phone held upright this enlarges everything below
+   the top menu by the same amount (the design is not rearranged), and makes the
+   top menu readable. Nothing here applies on a computer.
+   ===================================================================== */
+
+@media (max-aspect-ratio: 1/1) and (max-width: 1000px) {
+
+    /* ---------- Top menu: same links and dropdown, readable size ---------- */
+
+    .navbar {
+        height: auto;
+        flex-wrap: wrap;
+        align-items: center;
+        padding: 20px 28px 0;
+        position: relative;
+        z-index: 60;
+    }
+
+    .navbar .navbar-brand img { height: 78px; margin-left: 0; }
+    .navbar .navbar-right { margin-left: auto; gap: 22px; }
+    .navbar .live-datetime { display: none; }
+
+    .navbar .theme-toggle {
+        width: 68px;
+        height: 68px;
+        font-size: 1.9rem;
+    }
+
+    .navbar .logout-btn {
+        padding: 18px 30px;
+        font-size: 1.8rem;
+        border-radius: 12px;
+    }
+
+    .navbar .navbar-links {
+        order: 3;
+        flex: 0 0 calc(100% + 56px);
+        flex-wrap: wrap;
+        justify-content: flex-start;
+        gap: 0 8px;
+        margin: 18px -28px 0;
+        padding: 0 28px;
+        border-top: 1px solid rgba(128, 128, 128, 0.28);
+    }
+
+    .navbar .nav-link {
+        font-size: 2rem;
+        padding: 28px 14px;
+        cursor: pointer;
+    }
+
+    .navbar .nav-link::after {
+        left: 14px;
+        right: 14px;
+        height: 5px;
+    }
+
+    .navbar .nav-dropdown { position: static; }
+
+    .navbar .nav-dropdown-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        min-width: 0;
+        border-radius: 0 0 16px 16px;
+    }
+
+    .navbar .nav-dropdown-menu a {
+        font-size: 2rem;
+        padding: 30px 44px;
+        border-left-width: 6px;
+    }
+
+    .navbar .nav-dropdown:hover .nav-dropdown-menu { opacity: 0; visibility: hidden; transform: translateY(-6px); }
+    .navbar .nav-dropdown.open .nav-dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+
+    /* ---------- Everything under the menu: the same design, enlarged evenly ---------- */
+
+    .main-content {
+        zoom: 2.4;
+        padding: 22px 14px 28px;
+    }
+
+    /* the only change: rows of controls may wrap onto a second line when the screen is narrow */
+    .page-header { flex-wrap: wrap; gap: 10px; }
+    .filter-bar { flex-wrap: wrap; }
+    .filter-bar input[type="text"],
+    .filter-bar input[type="search"] { flex: 1 1 100%; width: 100%; min-width: 0; }
+    .add-form-row { flex-wrap: wrap; }
+
+    .filter-dropdown-trigger { cursor: pointer; }
+    .filter-dropdown-menu { z-index: 40; }
+    .filter-dropdown:hover .filter-dropdown-menu { opacity: 0; visibility: hidden; }
+    .filter-dropdown.open .filter-dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
+
+    /* ---------- Lists: the same table. The script picks the largest size at which it still fits the screen ---------- */
+
+    .table-card {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* slightly tighter cells and wrapping text, so every column fits the screen width */
+    .table-card thead th { padding: 12px 10px; }
+    .table-card tbody td { padding: 12px 10px; overflow-wrap: normal; word-break: normal; }
+    .table-card tbody td.wrap-any { overflow-wrap: break-word; }
+    .table-card .badge { white-space: nowrap; }
+    .table-card .action-btn { overflow-wrap: normal; word-break: normal; }
+
+    /* the CSV example on the Import Students page is wide: it scrolls inside its own card
+       instead of stretching the whole page */
+    .format-card {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .format-card .format-table { white-space: nowrap; }
+
+    /* the Actions column stays pinned at the right edge so the buttons are always in reach */
+    .table-card table.pin-actions th:last-child,
+    .table-card table.pin-actions td:last-child {
+        position: sticky;
+        right: 0;
+        z-index: 2;
+        background-color: var(--bg-card);
+        box-shadow: -10px 0 12px -10px rgba(0, 0, 0, 0.6);
+    }
+
+    .table-card table.pin-actions th:last-child {
+        z-index: 3;
+        background-color: var(--table-header-bg, #0F1B2D);
+    }
+
+    .swipe-hint {
+        margin: 0 0 6px;
+        text-align: right;
+        font-size: 0.72rem;
+        color: var(--text-muted);
+    }
+}

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Techlab;
 
 use App\Http\Controllers\Controller;
+use App\Models\AuditLog;
 use App\Models\ClearanceItem;
 use App\Models\Department;
 use App\Models\SchoolYear;
@@ -33,10 +34,14 @@ class SchoolYearController extends Controller
             'semester' => ['required', 'in:1st Semester,2nd Semester'],
         ]);
 
+        $label = $validated['year_label'] . ' - ' . $validated['semester'];
+
         SchoolYear::create([
-            'year_label' => $validated['year_label'] . ' - ' . $validated['semester'],
+            'year_label' => $label,
             'is_active' => false,
         ]);
+
+        AuditLog::record('school_year.created', $label);
 
         return back()->with('success', 'School year created.');
     }
@@ -68,6 +73,12 @@ class SchoolYearController extends Controller
             }
         }
 
+        AuditLog::record(
+            'school_year.activated',
+            $schoolYear->year_label,
+            'A fresh clearance cycle was started for ' . $students->count() . ' student(s)'
+        );
+
         return back()->with('success', "{$schoolYear->year_label} is now active. All students have a fresh clearance cycle.");
     }
 
@@ -80,7 +91,11 @@ class SchoolYearController extends Controller
             return back()->withErrors(['school_year' => 'You cannot delete the currently active school year. Activate a different one first.']);
         }
 
+        $label = $schoolYear->year_label;
+
         $schoolYear->delete();
+
+        AuditLog::record('school_year.deleted', $label, 'Its clearance records were deleted with it');
 
         return back()->with('success', "{$schoolYear->year_label} has been deleted.");
     }

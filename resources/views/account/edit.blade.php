@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Account Settings - STI Valencia Clearance System</title>
     <style>
         * {
@@ -237,11 +238,12 @@
             background-color: #F0B90B;
         }
     </style>
+    <link rel="stylesheet" href="{{ asset('css/phone-account.css') }}">
 </head>
 <body>
     <div class="topbar">
         <div class="topbar-left">
-            <img src="{{ asset('images/sti_val_logo.png') }}" alt="STI Valencia Logo">
+            <a href="{{ auth('student')->check() ? route('student.dashboard') : route('staff.dashboard') }}" title="Go to dashboard" style="display:block;"><img src="{{ asset('images/sti_val_logo.png') }}" alt="STI Valencia Logo"></a>
         </div>
         <div class="header-right">
             <span class="live-datetime" id="liveDateTime"></span>

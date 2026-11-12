@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Techlab;
 
 use App\Http\Controllers\Controller;
+use App\Models\AuditLog;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -54,6 +55,12 @@ class StudentController extends Controller
             'must_change_password' => true,
         ]);
 
+        AuditLog::record(
+            'student.password_reset',
+            "{$student->last_name}, {$student->first_name} ({$student->student_number})",
+            'Password set back to the default'
+        );
+
         return back()->with('success', "Password for {$student->first_name} {$student->last_name} has been reset to default.");
     }
 
@@ -67,7 +74,20 @@ class StudentController extends Controller
             'student_ids.*' => ['exists:students,id'],
         ]);
 
+        $students = Student::whereIn('id', $validated['student_ids'])->get();
+
+        $names = $students
+            ->map(fn ($student) => "{$student->last_name}, {$student->first_name} ({$student->student_number})")
+            ->take(30)
+            ->implode('; ');
+
+        if ($students->count() > 30) {
+            $names .= '; and ' . ($students->count() - 30) . ' more';
+        }
+
         $count = Student::whereIn('id', $validated['student_ids'])->delete();
+
+        AuditLog::record('student.deleted', "$count student(s)", $names);
 
         return back()->with('success', "$count student(s) deleted.");
     }
