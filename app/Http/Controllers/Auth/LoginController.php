@@ -7,11 +7,18 @@ use App\Models\AuditLog;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 
 class LoginController extends Controller
 {
+    /**
+     * Wrong tries allowed before the login is paused, and how long the pause lasts.
+     */
+    private const MAX_ATTEMPTS = 3;
+    private const PAUSE_SECONDS = 300;
+
     /**
      * Show the login form.
      */
@@ -34,19 +41,23 @@ class LoginController extends Controller
         ]);
 
         $throttleKey = Str::lower($credentials['email']) . '|' . $request->ip();
+        $pauseKey = 'login-paused|' . $throttleKey;
 
-        if (RateLimiter::tooManyAttempts($throttleKey, 5)) {
-            $seconds = RateLimiter::availableIn($throttleKey);
-            $minutes = ceil($seconds / 60);
+        // The login is paused after too many wrong tries
+        $pausedUntil = Cache::get($pauseKey);
+
+        if ($pausedUntil && $pausedUntil > time()) {
+            $minutes = (int) ceil(($pausedUntil - time()) / 60);
 
             return back()->withErrors([
-                'email' => "Too many login attempts. Please try again in {$minutes} minute" . ($minutes > 1 ? 's' : '') . '.',
+                'email' => "Too many wrong attempts. Please try again in {$minutes} minute" . ($minutes > 1 ? 's' : '') . '.',
             ])->onlyInput('email');
         }
 
         // Try staff/department guard first
         if (Auth::guard('web')->attempt($credentials, $request->boolean('remember'))) {
             RateLimiter::clear($throttleKey);
+            Cache::forget($pauseKey);
             Auth::guard('student')->logout();
             $request->session()->regenerate();
 
@@ -64,6 +75,7 @@ class LoginController extends Controller
         // Try student guard second
         if (Auth::guard('student')->attempt($credentials, $request->boolean('remember'))) {
             RateLimiter::clear($throttleKey);
+            Cache::forget($pauseKey);
             Auth::guard('web')->logout();
             $request->session()->regenerate();
 
@@ -81,10 +93,23 @@ class LoginController extends Controller
             AuditLog::record('auth.login_failed', null, 'Wrong password', $credentials['email']);
         }
 
-        RateLimiter::hit($throttleKey, 180);
+        // Count this wrong try, and tell the person how many tries are left
+        RateLimiter::hit($throttleKey, 900);
+        $left = max(0, self::MAX_ATTEMPTS - RateLimiter::attempts($throttleKey));
+
+        if ($left === 0) {
+            RateLimiter::clear($throttleKey);
+            Cache::put($pauseKey, time() + self::PAUSE_SECONDS, self::PAUSE_SECONDS);
+
+            $minutes = self::PAUSE_SECONDS / 60;
+
+            return back()->withErrors([
+                'email' => "Too many wrong attempts. Login is paused for {$minutes} minutes. Please try again later.",
+            ])->onlyInput('email');
+        }
 
         return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
+            'email' => 'The provided credentials do not match our records. You have ' . $left . ' attempt' . ($left > 1 ? 's' : '') . ' left before login is paused for ' . (self::PAUSE_SECONDS / 60) . ' minutes.',
         ])->onlyInput('email');
     }
 
