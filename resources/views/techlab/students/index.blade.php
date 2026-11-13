@@ -624,9 +624,6 @@
                                 <td>{{ $student->course }} {{ $student->year_level }}{{ $student->section }}</td>
                                 <td>
                                     <button type="submit" form="reset-form-{{ $student->id }}" class="action-btn" onclick="return confirm('Reset password for {{ $student->first_name }} {{ $student->last_name }} to default (student ID)?');">Reset Password</button>
-                                    <form id="reset-form-{{ $student->id }}" method="POST" action="{{ route('techlab.students.reset-password', $student) }}" style="display:none;">
-                                        @csrf
-                                    </form>
                                 </td>
                             </tr>
                         @empty
@@ -638,6 +635,13 @@
                 </table>
             </div>
         </form>
+
+        {{-- The reset forms live outside the Delete Selected form, because a form cannot sit inside a form --}}
+        @foreach ($students as $student)
+            <form id="reset-form-{{ $student->id }}" method="POST" action="{{ route('techlab.students.reset-password', $student) }}" style="display:none;">
+                @csrf
+            </form>
+        @endforeach
 
         <div class="pagination-wrap">
             {{ $students->links() }}
