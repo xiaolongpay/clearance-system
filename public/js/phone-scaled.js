@@ -1,5 +1,6 @@
 /*
  * phone-scaled.js  |  Small helpers for the staff pages on a phone.
+ *   0. Scrolls up to the green or red message after an action, so it is not missed.
  *   1. Lets the Techlab Admin menu and the filter menus open when tapped.
  *   2. Keeps the Actions column of a list pinned to the right edge while it scrolls sideways.
  *   3. Picks the largest text size at which every column of every list still fits the screen.
@@ -7,6 +8,18 @@
  * On a computer it does nothing.
  */
 (function () {
+    // After an action (reset password, mark cleared, and so on) the green or red message is at the top of the page.
+    // The browser keeps the old scroll position, so the message is easy to miss. Scroll up so it is always seen.
+    var message = document.querySelector('.success-banner, .error-banner');
+
+    if (message) {
+        if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
+
+        var goUp = function () { window.scrollTo(0, 0); };
+        goUp();
+        window.addEventListener('load', function () { setTimeout(goUp, 60); });
+    }
+
     var phone = window.matchMedia('(max-aspect-ratio: 1/1) and (max-width: 1000px)');
 
     // 1) tap menus
