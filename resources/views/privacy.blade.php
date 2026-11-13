@@ -415,7 +415,7 @@
 
         <section class="block">
             <h2><span class="num">5</span> Who else handles it</h2>
-            <p>Clearance emails are delivered through Google's Gmail service, so the message (your name, the office, the result, and any reason given) passes through Google. The system also runs on a hosting service that stores its data on the school's behalf. We do not share your information with anyone else.</p>
+            <p>Clearance emails are delivered through Google's Gmail service, so the message (your name, the office, the result, and any reason given) passes through Google. The system runs on the Vercel hosting service, and its data is stored in the TiDB Cloud database service. Both work on the school's behalf, and the data is kept in Singapore. We do not share your information with anyone else.</p>
         </section>
 
         <section class="block">
