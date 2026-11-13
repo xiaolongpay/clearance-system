@@ -222,7 +222,17 @@ class StudentImportController extends Controller
      */
     private function parseCsv(string $path): array
     {
-        $handle = fopen($path, 'r');
+        $contents = (string) file_get_contents($path);
+
+        // Excel's plain "CSV (Comma delimited)" saves letters like n with a tilde in an older format (Windows-1252),
+        // which the database refuses. Such a file is converted to UTF-8 here, so the import works either way.
+        if (! mb_check_encoding($contents, 'UTF-8')) {
+            $contents = mb_convert_encoding($contents, 'UTF-8', 'Windows-1252');
+        }
+
+        $handle = fopen('php://temp', 'r+');
+        fwrite($handle, $contents);
+        rewind($handle);
 
         $headerLine = fgets($handle);
         $headerLine = preg_replace('/^\xEF\xBB\xBF/', '', $headerLine ?: '');
