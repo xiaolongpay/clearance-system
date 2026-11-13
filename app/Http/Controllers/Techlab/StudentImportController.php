@@ -9,6 +9,7 @@ use App\Models\Department;
 use App\Models\SchoolYear;
 use App\Models\Student;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class StudentImportController extends Controller
@@ -62,72 +63,128 @@ class StudentImportController extends Controller
         }
 
         $departments = Department::all();
+        $now = now();
 
         $added = 0;
         $updated = 0;
         $generatedEmails = 0;
+        $renumbered = 0;
 
-        foreach ($parsed['rows'] as $row) {
-            $studentNumber = $row['student_number'];
+        // Everything that already exists is loaded once, so the import does not ask the database
+        // about each student and each office separately (that made it too slow on the online hosting)
+        $numbers = array_column($parsed['rows'], 'student_number');
+        $emails = array_filter(array_map(fn ($row) => strtolower($row['email']), $parsed['rows']));
 
-            // Details that come from the CSV (the password is NOT in this list)
-            $details = [
-                'first_name' => $row['first_name'],
-                'last_name' => $row['last_name'],
-                'school_year_id' => $activeSchoolYear->id,
-                'is_active' => true,
-            ];
-
-            if ($row['has_middle_initial']) {
-                $details['middle_initial'] = $row['middle_initial'];
-            }
-
-            if ($row['email'] !== '') {
-                $details['email'] = $row['email'];
-            }
-
-            foreach (['course' => 'course', 'year_level' => 'year', 'section' => 'section'] as $field => $key) {
-                if ($row['has_' . $key]) {
-                    $details[$field] = $row[$key];
-                }
-            }
-
-            $student = Student::where('student_number', $studentNumber)->first();
-
-            if ($student) {
-                // Existing student: update the details only, keep the password
-                $student->update($details);
-                $updated++;
-            } else {
-                // New student: fill anything the file did not provide, then
-                // set the default password (the student number)
-                if (! isset($details['email'])) {
-                    $details['email'] = $this->makeEmail($row['last_name'], $studentNumber);
-                    $generatedEmails++;
-                }
-
-                $student = Student::create($details + [
-                    'student_number' => $studentNumber,
-                    'course' => '',
-                    'year_level' => '',
-                    'section' => '',
-                    'password' => Hash::make($studentNumber),
-                    'must_change_password' => true,
-                ]);
-                $added++;
-            }
-
-            // Generate a clearance item for every department, if it doesn't exist yet
-            foreach ($departments as $department) {
-                ClearanceItem::createOrFirst([
-                    'student_id' => $student->id,
-                    'department_id' => $department->id,
-                    'school_year_id' => $activeSchoolYear->id,
-                ], [
-                    'status' => 'pending',
-                ]);
-            }
+        $byNumber = [];
+        foreach (Student::whereIn('student_number', $numbers)->get() as $existing) {
+            $byNumber[(string) $existing->student_number] = $existing;
         }
+
+        $byEmail = [];
+        foreach (Student::whereIn('email', $emails)->get() as $existing) {
+            $byEmail[strtolower($existing->email)] = $existing;
+        }
+
+        $haveItem = [];
+        foreach (ClearanceItem::where('school_year_id', $activeSchoolYear->id)->get(['student_id', 'department_id']) as $item) {
+            $haveItem[$item->student_id . '-' . $item->department_id] = true;
+        }
+
+        $newItems = [];
+
+        DB::transaction(function () use ($parsed, $departments, $activeSchoolYear, $now, &$byNumber, &$byEmail, &$haveItem, &$newItems, &$added, &$updated, &$generatedEmails, &$renumbered) {
+            foreach ($parsed['rows'] as $row) {
+                $studentNumber = $row['student_number'];
+
+                // Details that come from the CSV (the password is NOT in this list)
+                $details = [
+                    'first_name' => $row['first_name'],
+                    'last_name' => $row['last_name'],
+                    'school_year_id' => $activeSchoolYear->id,
+                    'is_active' => true,
+                ];
+
+                if ($row['has_middle_initial']) {
+                    $details['middle_initial'] = $row['middle_initial'];
+                }
+
+                if ($row['email'] !== '') {
+                    $details['email'] = $row['email'];
+                }
+
+                foreach (['course' => 'course', 'year_level' => 'year', 'section' => 'section'] as $field => $key) {
+                    if ($row['has_' . $key]) {
+                        $details[$field] = $row[$key];
+                    }
+                }
+
+                $student = $byNumber[(string) $studentNumber] ?? null;
+
+                // A student whose number changed in the file is still the same student when the email matches
+                if (! $student && isset($details['email'])) {
+                    $student = $byEmail[strtolower($details['email'])] ?? null;
+
+                    if ($student) {
+                        $details['student_number'] = $studentNumber;
+                        $renumbered++;
+                    }
+                }
+
+                if ($student) {
+                    // Existing student: update the details only (and only if something changed), keep the password
+                    $student->fill($details);
+
+                    if ($student->isDirty()) {
+                        $student->save();
+                    }
+
+                    $updated++;
+                } else {
+                    // New student: fill anything the file did not provide, then
+                    // set the default password (the student number)
+                    if (! isset($details['email'])) {
+                        $details['email'] = $this->makeEmail($row['last_name'], $studentNumber);
+                        $generatedEmails++;
+                    }
+
+                    $student = Student::create($details + [
+                        'student_number' => $studentNumber,
+                        'course' => '',
+                        'year_level' => '',
+                        'section' => '',
+                        // A temporary password that the student must change at the first login
+                        'password' => Hash::make($studentNumber, ['rounds' => 10]),
+                        'must_change_password' => true,
+                    ]);
+                    $added++;
+                }
+
+                $byNumber[(string) $student->student_number] = $student;
+                $byEmail[strtolower($student->email)] = $student;
+
+                // An entry for every office, if it does not exist yet
+                foreach ($departments as $department) {
+                    $key = $student->id . '-' . $department->id;
+
+                    if (! isset($haveItem[$key])) {
+                        $newItems[] = [
+                            'student_id' => $student->id,
+                            'department_id' => $department->id,
+                            'school_year_id' => $activeSchoolYear->id,
+                            'status' => 'pending',
+                            'created_at' => $now,
+                            'updated_at' => $now,
+                        ];
+                        $haveItem[$key] = true;
+                    }
+                }
+            }
+
+            // All the missing entries are saved in a few big steps
+            foreach (array_chunk($newItems, 200) as $chunk) {
+                ClearanceItem::insert($chunk);
+            }
+        });
 
         if ($added + $updated === 0) {
             return back()->withErrors([
@@ -136,6 +193,10 @@ class StudentImportController extends Controller
         }
 
         $message = "$added new students added, $updated existing students updated (their passwords were kept).";
+
+        if ($renumbered > 0) {
+            $message .= " $renumbered student number(s) were changed to the number in the file, because the email matched an existing student.";
+        }
 
         if ($parsed['skipped'] > 0) {
             $message .= " {$parsed['skipped']} row(s) were skipped because they had no student number.";
