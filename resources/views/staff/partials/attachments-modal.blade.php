@@ -1,8 +1,10 @@
 <style>
-    .att-link { display: block; margin-top: 4px; background: none; border: 0; padding: 0; font: inherit; font-size: 0.78rem; color: #B8860B; cursor: pointer; text-align: left; }
-    .att-link:hover { text-decoration: underline; }
-    [data-theme="dark"] .att-link { color: #FFC72C; }
-    .att-new { display: inline-block; margin-left: 4px; padding: 1px 6px; border-radius: 8px; background: #EF4444; color: #fff; font-size: 0.65rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.3px; }
+    .att-name { cursor: pointer; border-bottom: 1px dotted currentColor; display: inline-block; }
+    .att-name:hover { color: #B8860B; }
+    [data-theme="dark"] .att-name:hover { color: #FFC72C; }
+    .att-chip { display: inline-flex; align-items: center; gap: 4px; margin-left: 6px; padding: 0 6px; border-radius: 8px; border: 1px solid var(--border-color); color: var(--text-muted); font-size: 0.68rem; font-weight: 600; vertical-align: middle; }
+    .att-chip.has-new::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #EF4444; }
+    .att-flag { color: #EF4444; font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.3px; }
 
     .att-overlay { position: fixed; inset: 0; background: rgba(8, 14, 25, 0.6); display: none; align-items: center; justify-content: center; padding: 20px; z-index: 100; }
     .att-overlay.open { display: flex; }
@@ -37,18 +39,42 @@
         var title = document.getElementById('attTitle');
         var body = document.getElementById('attBody');
 
+        function openIt(id, student) {
+            var source = document.getElementById('att-' + id);
+            title.textContent = student;
+            body.innerHTML = source ? source.innerHTML : '';
+            overlay.classList.add('open');
+            overlay.setAttribute('aria-hidden', 'false');
+        }
+
         function closeIt() {
             overlay.classList.remove('open');
             overlay.setAttribute('aria-hidden', 'true');
         }
 
-        document.querySelectorAll('[data-att]').forEach(function (button) {
-            button.addEventListener('click', function () {
-                var source = document.getElementById('att-' + button.getAttribute('data-att'));
-                title.textContent = button.getAttribute('data-student');
-                body.innerHTML = source ? source.innerHTML : '';
-                overlay.classList.add('open');
-                overlay.setAttribute('aria-hidden', 'false');
+        // Only students who attached something get a clickable name.
+        document.querySelectorAll('.att-marker').forEach(function (marker) {
+            var cell = marker.closest('td');
+            var name = cell ? cell.querySelector('.student-name') : null;
+            if (!name) { return; }
+
+            var id = marker.getAttribute('data-att');
+            var student = marker.getAttribute('data-student');
+            var fresh = parseInt(marker.getAttribute('data-new'), 10) > 0;
+
+            name.classList.add('att-name');
+            name.setAttribute('role', 'button');
+            name.setAttribute('tabindex', '0');
+            name.setAttribute('title', 'View attachments');
+
+            var chip = document.createElement('span');
+            chip.className = 'att-chip' + (fresh ? ' has-new' : '');
+            chip.textContent = marker.getAttribute('data-count');
+            name.appendChild(chip);
+
+            name.addEventListener('click', function () { openIt(id, student); });
+            name.addEventListener('keydown', function (event) {
+                if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); openIt(id, student); }
             });
         });
 
