@@ -653,6 +653,7 @@
         <div class="topbar-right">
             <a href="{{ route('account.edit') }}" class="account-link">Account Settings</a>
             <span class="live-datetime" id="liveDateTime"></span>
+            <x-student-notifications />
             <button type="button" class="theme-toggle" id="themeToggle" title="Toggle theme">🌙</button>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf

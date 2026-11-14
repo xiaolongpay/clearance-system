@@ -37,6 +37,7 @@ Route::middleware('auth:web')->get('/staff/dashboard', function () {
 Route::middleware('auth:student')->group(function () {
     Route::get('/student/dashboard', [DashboardController::class, 'index'])->name('student.dashboard');
     Route::get('/student/clearance-pdf', [ClearancePdfController::class, 'download'])->name('student.clearance-pdf');
+    Route::post('/student/notifications/seen', [\App\Http\Controllers\Student\NotificationController::class, 'seen'])->name('student.notifications.seen');
 });
 
 // Account settings (shared by both students and staff)
