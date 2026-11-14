@@ -61,7 +61,7 @@
     [data-theme="light"] .sn-time { color: #8190A5; }
     @media (max-width: 640px) {
         .sn-wrap { position: static; }
-        .sn-panel { position: fixed; top: 64px; left: 10px; right: 10px; width: auto; max-width: 380px; margin-left: auto; }
+        .sn-panel { position: fixed; top: 70px; left: 50%; right: auto; width: calc(100vw - 32px); max-width: 320px; max-height: 60vh; transform: translateX(-50%); border-radius: 14px; box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45); }
     }
 </style>
 
