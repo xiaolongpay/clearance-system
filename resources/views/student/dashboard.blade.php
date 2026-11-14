@@ -718,11 +718,12 @@
                             <tr>
                                 <td>
                                     <button type="button"
-                                            class="office-link"
+                                            class="office-link" data-item="{{ $item->id }}"
                                             data-office="{{ $item->department->name }}"
                                             data-requirements="{{ $item->department->requirements }}">
                                         {!! str_replace('/', '/<wbr>', e($item->department->name)) !!}
                                     </button>
+                                    @include('student.partials.attach-button', ['item' => $item])
                                 </td>
                                 <td>
                                     <span class="officer-name">{{ $item->department->officer_name }}</span>
@@ -831,5 +832,6 @@
             if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
         });
     </script>
+    @include('student.partials.uploads')
 </body>
 </html>

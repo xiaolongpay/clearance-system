@@ -24,7 +24,7 @@ class ClearanceController extends Controller
 
         $activeSchoolYear = SchoolYear::where('is_active', true)->first();
 
-        $query = ClearanceItem::with('student')
+        $query = ClearanceItem::with(['student', 'attachments'])
             ->where('clearance_items.department_id', $department->id)
             ->where('clearance_items.school_year_id', $activeSchoolYear?->id);
 
@@ -51,6 +51,14 @@ class ClearanceController extends Controller
 
         if ($request->filled('section')) {
             $query->whereHas('student', fn ($q) => $q->where('section', $request->input('section')));
+        }
+
+        if ($request->input('uploads') === 'any') {
+            $query->whereHas('uploads');
+        }
+
+        if ($request->input('uploads') === 'new') {
+            $query->whereHas('uploads', fn ($q) => $q->whereNull('viewed_at'));
         }
 
         $clearanceItems = $query

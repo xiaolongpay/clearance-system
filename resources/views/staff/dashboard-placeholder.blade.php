@@ -436,6 +436,7 @@
 
         <div class="navbar-right">
             <span class="live-datetime" id="liveDateTime"></span>
+            <x-staff-notifications />
             <button type="button" class="theme-toggle" id="themeToggle" title="Toggle theme">🌙</button>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf

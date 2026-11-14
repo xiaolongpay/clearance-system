@@ -1,0 +1,2450 @@
+﻿
+===== resources\views\student\dashboard.blade.php =====
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Student Dashboard - STI Valencia Clearance System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-page: #F4F6F9;
+            --bg-card: #FFFFFF;
+            --bg-navy: #0F1B2D;
+            --text-main: #0F1B2D;
+            --text-muted: #6B7280;
+            --border-color: #9CA3AF;
+        }
+
+        [data-theme="dark"] {
+            --bg-page: #0A1220;
+            --bg-card: #16233A;
+            --bg-navy: #0A1220;
+            --text-main: #F3F4F6;
+            --text-muted: #9CA3AF;
+            --border-color: #4B5563;
+        }
+
+        html {
+            font-size: 16px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            min-height: 100vh;
+        }
+
+        .topbar {
+            background-color: var(--bg-navy);
+            color: #fff;
+            padding: 20px 40px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .topbar-left img {
+            height: 42px;
+            width: auto;
+            display: block;
+            margin-left: 24px;
+        }
+
+        .topbar-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            font-size: 0.95rem;
+        }
+
+        .live-datetime {
+            color: #C4CBD8;
+            font-size: 0.85rem;
+            white-space: nowrap;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: #fff;
+            font-size: 1.1rem;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .theme-toggle:hover {
+            border-color: #FFC72C;
+        }
+
+        .logout-btn {
+            background-color: transparent;
+            border: 1px solid rgba(220, 38, 38, 0.4);
+            color: #F87171;
+            padding: 9px 14px;
+            border-radius: 6px;
+            font-size: 0.82rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.12s;
+        }
+
+        .logout-btn:hover {
+            background-color: rgba(220, 38, 38, 0.12);
+        }
+
+        .account-link {
+            color: #E5E7EB;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .account-link:hover {
+            color: #FFC72C;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .status-banner {
+            background-color: var(--bg-card);
+            border-left: 6px solid #FFC72C;
+            border-radius: 10px;
+            padding: 24px 32px;
+            margin-bottom: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .status-banner.cleared {
+            border-left-color: #16A34A;
+        }
+
+        .status-banner h2 {
+            font-size: 1.15rem;
+            margin-bottom: 6px;
+        }
+
+        .status-banner p {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        .download-btn {
+            background-color: #FFC72C;
+            color: #0F1B2D;
+            font-weight: 700;
+            padding: 12px 24px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            white-space: nowrap;
+        }
+
+        .download-btn:hover {
+            background-color: #F0B90B;
+        }
+
+        /* --- Form card, matching the paper clearance layout --- */
+
+        .clearance-card {
+            background-color: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 4px;
+            padding: 32px 36px;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .form-header .logo-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .form-header .logo-row img {
+            height: 40px;
+            width: auto;
+        }
+
+        .form-header .school-name {
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        .form-header .address {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        .form-header .clearance-title {
+            font-size: 0.9rem;
+            font-weight: 700;
+            letter-spacing: 6px;
+            margin-top: 12px;
+        }
+
+        table.info-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 24px;
+        }
+
+        table.info-table td {
+            border: 1px solid var(--border-color);
+            padding: 10px 14px;
+            font-size: 0.85rem;
+        }
+
+        table.info-table td strong {
+            font-weight: 600;
+        }
+
+        .requirements-hint {
+            color: var(--text-muted);
+            font-size: 0.78rem;
+            margin-bottom: 10px;
+        }
+
+        table.clearance-table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: fixed;
+        }
+
+        table.clearance-table th,
+        table.clearance-table td {
+            border: 1px solid var(--border-color);
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 0.85rem;
+        }
+
+        table.clearance-table thead th {
+            text-align: center;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        table.clearance-table thead .cleared-by-header {
+            font-size: 0.9rem;
+        }
+
+        .office-col {
+            width: 22%;
+        }
+
+        table.clearance-table .signature-col {
+            width: 30%;
+            text-align: center;
+        }
+
+        table.clearance-table .date-col {
+            width: 15%;
+            text-align: center;
+        }
+
+        .officer-name {
+            color: var(--text-main);
+            font-weight: 600;
+        }
+
+        .signature-cell {
+            height: 42px;
+            width: 100%;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .signature-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            object-position: center;
+            display: block;
+            mix-blend-mode: multiply;
+        }
+
+        [data-theme="dark"] .signature-img {
+            mix-blend-mode: screen;
+            filter: invert(1);
+        }
+
+        /* --- Clickable office name --- */
+
+        .office-link {
+            background: none;
+            border: none;
+            padding: 0;
+            font: inherit;
+            color: var(--text-main);
+            text-align: left;
+            cursor: pointer;
+            text-decoration: underline;
+            text-decoration-style: dotted;
+            text-underline-offset: 4px;
+            text-decoration-color: var(--text-muted);
+            transition: color 0.12s;
+        }
+
+        .office-link:hover,
+        .office-link:focus-visible {
+            color: #B8860B;
+            text-decoration-color: #FFC72C;
+            outline: none;
+        }
+
+        [data-theme="dark"] .office-link:hover,
+        [data-theme="dark"] .office-link:focus-visible {
+            color: #FFC72C;
+        }
+
+        /* --- Requirements popup --- */
+
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(8, 14, 25, 0.6);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.18s ease, visibility 0.18s ease;
+            z-index: 100;
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-box {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-top: 4px solid #FFC72C;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 460px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 24px 26px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+            transform: translateY(10px);
+            transition: transform 0.18s ease;
+        }
+
+        .modal-overlay.open .modal-box {
+            transform: translateY(0);
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 14px;
+            margin-bottom: 4px;
+        }
+
+        .modal-title {
+            font-size: 1.05rem;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        .modal-close {
+            background: none;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            color: var(--text-main);
+            border-color: #FFC72C;
+        }
+
+        .modal-close svg {
+            width: 14px;
+            height: 14px;
+            stroke: currentColor;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+        }
+
+        .modal-subtitle {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            font-weight: 600;
+            margin-bottom: 14px;
+        }
+
+        .modal-body {
+            font-size: 0.9rem;
+            line-height: 1.6;
+            white-space: pre-line;
+            word-wrap: break-word;
+        }
+
+        .modal-body.empty {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /* =====================================================
+           Phone layout: the clearance form stays a whole paper
+           sheet (same four columns), scaled down to fit the screen
+           ===================================================== */
+
+        @media (max-width: 640px) {
+            .topbar {
+                padding: 10px 12px;
+                gap: 8px;
+            }
+
+            .topbar-left img {
+                height: 30px;
+                margin-left: 0;
+            }
+
+            .topbar-right {
+                gap: 8px;
+            }
+
+            .live-datetime {
+                display: none;
+            }
+
+            .account-link {
+                font-size: 0.78rem;
+            }
+
+            .theme-toggle {
+                width: 32px;
+                height: 32px;
+                font-size: 0.95rem;
+            }
+
+            .logout-btn {
+                padding: 7px 10px;
+                font-size: 0.75rem;
+            }
+
+            .container {
+                margin: 14px auto 28px;
+                padding: 0 10px;
+            }
+
+            .status-banner {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 12px;
+                padding: 16px;
+                margin-bottom: 14px;
+                border-left-width: 5px;
+            }
+
+            .status-banner h2 {
+                font-size: 1.05rem;
+                margin-bottom: 4px;
+            }
+
+            .status-banner p {
+                font-size: 0.85rem;
+            }
+
+            .download-btn {
+                text-align: center;
+                padding: 12px;
+            }
+
+            .clearance-card {
+                padding: 14px 10px 16px;
+            }
+
+            .form-header {
+                margin-bottom: 14px;
+            }
+
+            .form-header .logo-row {
+                gap: 8px;
+            }
+
+            .form-header .logo-row img {
+                height: 26px;
+            }
+
+            .form-header .school-name {
+                font-size: 0.68rem;
+                letter-spacing: 0.2px;
+            }
+
+            .form-header .address {
+                font-size: 0.56rem;
+            }
+
+            .form-header .clearance-title {
+                font-size: 0.72rem;
+                letter-spacing: 4px;
+                margin-top: 8px;
+            }
+
+            table.info-table {
+                margin-bottom: 14px;
+            }
+
+            table.info-table td {
+                padding: 6px 7px;
+                font-size: 0.68rem;
+                line-height: 1.3;
+            }
+
+            .requirements-hint {
+                font-size: 0.66rem;
+                margin-bottom: 8px;
+            }
+
+            table.clearance-table th,
+            table.clearance-table td {
+                padding: 6px 5px;
+                font-size: 0.68rem;
+                line-height: 1.3;
+                word-wrap: break-word;
+            }
+
+            table.clearance-table thead th {
+                font-size: 0.6rem;
+                letter-spacing: 0.3px;
+            }
+
+            table.clearance-table thead .cleared-by-header {
+                font-size: 0.66rem;
+            }
+
+            .office-col {
+                width: 31%;
+            }
+
+            table.clearance-table .signature-col {
+                width: 27%;
+            }
+
+            table.clearance-table .date-col {
+                width: 19%;
+            }
+
+            .office-link {
+                padding: 4px 0;
+                line-height: 1.3;
+                overflow-wrap: anywhere;
+            }
+
+            .signature-cell {
+                height: 30px;
+            }
+
+            .modal-overlay {
+                padding: 14px;
+            }
+
+            .modal-box {
+                padding: 20px 18px;
+            }
+        }
+
+        /* very small phones (360px wide and under): a little tighter so nothing splits mid-word */
+        @media (max-width: 360px) {
+            .topbar-left img {
+                height: 26px;
+            }
+
+            .topbar-right {
+                gap: 6px;
+            }
+
+            .account-link {
+                font-size: 0.72rem;
+                white-space: nowrap;
+            }
+
+            .logout-btn {
+                padding: 6px 8px;
+                font-size: 0.7rem;
+                white-space: nowrap;
+            }
+
+            .clearance-card {
+                padding: 12px 6px 14px;
+            }
+
+            table.info-table td {
+                padding: 5px 4px;
+                font-size: 0.62rem;
+            }
+
+            table.clearance-table th,
+            table.clearance-table td {
+                padding: 5px 3px;
+                font-size: 0.62rem;
+            }
+
+            table.clearance-table thead th {
+                font-size: 0.54rem;
+                letter-spacing: 0;
+            }
+
+            .office-col {
+                width: 29%;
+            }
+
+            table.clearance-table .signature-col {
+                width: 24%;
+            }
+
+            table.clearance-table .date-col {
+                width: 25%;
+            }
+
+            .signature-cell {
+                height: 26px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="topbar">
+        <div class="topbar-left">
+            <a href="{{ auth('student')->check() ? route('student.dashboard') : route('staff.dashboard') }}" title="Go to dashboard" style="display:block;"><img src="{{ asset('images/sti_val_logo.png') }}" alt="STI Valencia Logo"></a>
+        </div>
+        <div class="topbar-right">
+            <a href="{{ route('account.edit') }}" class="account-link">Account Settings</a>
+            <span class="live-datetime" id="liveDateTime"></span>
+            <x-student-notifications />
+            <button type="button" class="theme-toggle" id="themeToggle" title="Toggle theme">ðŸŒ™</button>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="logout-btn">Log Out</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="status-banner {{ $isFullyCleared ? 'cleared' : '' }}">
+            <div>
+                @if ($isFullyCleared)
+                    <h2>You are fully cleared!</h2>
+                @endif
+                <p>Welcome back, {{ $student->first_name }} {{ $student->last_name }}</p>
+            </div>
+            <a href="{{ route('student.clearance-pdf') }}" class="download-btn">Download Clearance (PDF)</a>
+        </div>
+
+        <div class="clearance-card">
+            <div class="form-header">
+                <div class="logo-row">
+                    <img src="{{ asset('images/sti_logo.png') }}" alt="STI Logo">
+                    <div class="school-name">STI EDUCATION SERVICES GROUP, INC.</div>
+                </div>
+                <div class="address">Sayre Highway, Poblacion, Valencia City, Bukidnon</div>
+                <div class="clearance-title">C L E A R A N C E</div>
+            </div>
+
+            <table class="info-table">
+                <tr>
+                    <td style="width:34%;"><strong>Student ID No.:</strong> {{ $student->student_number }}</td>
+                    <td style="width:33%;"><strong>Program/Strand:</strong> {{ $student->course }} {{ $student->year_level }}{{ $student->section }}</td>
+                    <td style="width:33%;"><strong>{{ $student->schoolYear->year_label ?? 'SY' }}</strong></td>
+                </tr>
+                <tr>
+                    <td><strong>Last Name:</strong> {{ $student->last_name }}</td>
+                    <td><strong>First Name:</strong> {{ $student->first_name }}</td>
+                    <td><strong>Middle Initial:</strong> {{ $student->middle_initial }}</td>
+                </tr>
+            </table>
+
+            @if ($totalDepartments === 0)
+                <p style="padding: 24px; color: var(--text-muted); font-size: 0.85rem;">No clearance items have been set up for your school year yet.</p>
+            @else
+                <p class="requirements-hint">Click an office name to see what you need to submit or settle to get cleared.</p>
+
+                <table class="clearance-table">
+                    <thead>
+                        <tr>
+                            <th class="office-col" rowspan="2">OFFICE</th>
+                            <th class="cleared-by-header" colspan="3">CLEARED BY</th>
+                        </tr>
+                        <tr>
+                            <th>NAME</th>
+                            <th class="signature-col">SIGNATURE</th>
+                            <th class="date-col">DATE</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach ($clearanceItems as $item)
+                            <tr>
+                                <td>
+                                    <button type="button"
+                                            class="office-link"
+                                            data-office="{{ $item->department->name }}"
+                                            data-requirements="{{ $item->department->requirements }}">
+                                        {!! str_replace('/', '/<wbr>', e($item->department->name)) !!}
+                                    </button>
+                                </td>
+                                <td>
+                                    <span class="officer-name">{{ $item->department->officer_name }}</span>
+                                </td>
+                                <td class="signature-col">
+                                    @if ($item->status === 'cleared' && $item->department->signature_path)
+                                        <div class="signature-cell">
+                                            <img class="signature-img" src="{{ $item->department->signatureDataUri() }}" alt="Signature">
+                                        </div>
+                                    @endif
+                                </td>
+                                <td class="date-col">
+                                    @if ($item->status === 'cleared' && $item->signed_at)
+                                        {{ $item->signed_at->format('m/d/Y') }}
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="requirementsModal" aria-hidden="true">
+        <div class="modal-box" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle"></h3>
+                <button type="button" class="modal-close" id="modalClose" aria-label="Close">
+                    <svg viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"></path></svg>
+                </button>
+            </div>
+            <div class="modal-subtitle">Requirements for clearance</div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <script>
+        function updateDateTime() {
+            const now = new Date();
+            const options = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' };
+            document.getElementById('liveDateTime').textContent = now.toLocaleString('en-US', options);
+        }
+        updateDateTime();
+        setInterval(updateDateTime, 1000 * 30);
+
+        const toggleBtn = document.getElementById('themeToggle');
+        const root = document.documentElement;
+
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        root.setAttribute('data-theme', savedTheme);
+        toggleBtn.textContent = savedTheme === 'dark' ? 'ðŸŒ™' : 'â˜€ï¸';
+
+        toggleBtn.addEventListener('click', () => {
+            const current = root.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            root.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+            toggleBtn.textContent = next === 'dark' ? 'ðŸŒ™' : 'â˜€ï¸';
+        });
+
+        // --- Requirements popup ---
+        const modal = document.getElementById('requirementsModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalBody = document.getElementById('modalBody');
+        const modalClose = document.getElementById('modalClose');
+        let lastFocused = null;
+
+        function openModal(office, requirements) {
+            lastFocused = document.activeElement;
+            modalTitle.textContent = office;
+
+            const text = (requirements || '').trim();
+            if (text) {
+                modalBody.textContent = text;
+                modalBody.classList.remove('empty');
+            } else {
+                modalBody.textContent = 'No requirements have been listed for this office yet.';
+                modalBody.classList.add('empty');
+            }
+
+            modal.classList.add('open');
+            modal.setAttribute('aria-hidden', 'false');
+            modalClose.focus();
+        }
+
+        function closeModal() {
+            modal.classList.remove('open');
+            modal.setAttribute('aria-hidden', 'true');
+            if (lastFocused) lastFocused.focus();
+        }
+
+        document.querySelectorAll('.office-link').forEach((btn) => {
+            btn.addEventListener('click', () => {
+                openModal(btn.dataset.office, btn.dataset.requirements);
+            });
+        });
+
+        modalClose.addEventListener('click', closeModal);
+
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) closeModal();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.classList.contains('open')) closeModal();
+        });
+    </script>
+</body>
+</html>
+
+===== app\Models\ClearanceItem.php =====
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class ClearanceItem extends Model
+{
+    use HasFactory;
+
+    protected $fillable = [
+        'student_id',
+        'department_id',
+        'school_year_id',
+        'status',
+        'remarks',
+        'signed_by',
+        'signed_at',
+    ];
+
+    protected $casts = [
+        'signed_at' => 'datetime',
+    ];
+
+    public function student()
+    {
+        return $this->belongsTo(Student::class);
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
+
+    public function schoolYear()
+    {
+        return $this->belongsTo(SchoolYear::class);
+    }
+
+    public function signedByUser()
+    {
+        return $this->belongsTo(User::class, 'signed_by');
+    }
+}
+
+===== routes\web.php =====
+<?php
+
+use App\Http\Controllers\AccountController;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Registrar\ClearanceStatusController;
+use App\Http\Controllers\Staff\ClearanceController;
+use App\Http\Controllers\Student\ClearancePdfController;
+use App\Http\Controllers\Student\DashboardController;
+use App\Http\Controllers\Techlab\AuditLogController;
+use App\Http\Controllers\Techlab\DepartmentController;
+use App\Http\Controllers\Techlab\SchoolYearController;
+use App\Http\Controllers\Techlab\StudentController;
+use App\Http\Controllers\Techlab\StudentImportController;
+use Illuminate\Support\Facades\Route;
+
+// Home: send everyone straight to the login page
+Route::redirect('/', '/login');
+
+// Login (shared page for students and staff)
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'login']);
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+// Privacy notice (public, linked from the login page)
+Route::view('/privacy', 'privacy')->name('privacy');
+
+// Staff dashboard
+Route::middleware('auth:web')->get('/staff/dashboard', function () {
+    $activeSchoolYear = \App\Models\SchoolYear::where('is_active', true)->first();
+
+    return view('staff.dashboard-placeholder', [
+        'activeSchoolYear' => $activeSchoolYear,
+    ]);
+})->name('staff.dashboard');
+
+// Student dashboard
+Route::middleware('auth:student')->group(function () {
+    Route::get('/student/dashboard', [DashboardController::class, 'index'])->name('student.dashboard');
+    Route::get('/student/clearance-pdf', [ClearancePdfController::class, 'download'])->name('student.clearance-pdf');
+    Route::post('/student/notifications/seen', [\App\Http\Controllers\Student\NotificationController::class, 'seen'])->name('student.notifications.seen');
+});
+
+// Account settings (shared by both students and staff)
+Route::middleware('auth:web,student')->group(function () {
+    Route::get('/account', [AccountController::class, 'edit'])->name('account.edit');
+    Route::post('/account', [AccountController::class, 'update'])->name('account.update');
+});
+
+// Staff clearance management (all departments, including Techlab)
+Route::middleware('auth:web')->prefix('staff')->name('staff.')->group(function () {
+    Route::get('clearance', [ClearanceController::class, 'index'])->name('clearance.index');
+    Route::post('clearance/{clearanceItem}/clear', [ClearanceController::class, 'markCleared'])->name('clearance.clear');
+    Route::post('clearance/{clearanceItem}/reject', [ClearanceController::class, 'reject'])->name('clearance.reject');
+    Route::post('clearance/{clearanceItem}/revert', [ClearanceController::class, 'revert'])->name('clearance.revert');
+});
+
+// Registrar-only view
+Route::middleware(['auth:web', 'registrar'])->prefix('registrar')->name('registrar.')->group(function () {
+    Route::get('clearance-status', [ClearanceStatusController::class, 'index'])->name('clearance-status');
+});
+
+// Techlab-only management
+Route::middleware(['auth:web', 'techlab'])->prefix('techlab')->name('techlab.')->group(function () {
+    Route::resource('departments', DepartmentController::class);
+    Route::post('departments/{department}/reset-password', [DepartmentController::class, 'resetPassword'])->name('departments.reset-password');
+
+    Route::get('students/import', [StudentImportController::class, 'create'])->name('students.import.create');
+    Route::post('students/import', [StudentImportController::class, 'store'])->name('students.import.store');
+
+    Route::get('students', [StudentController::class, 'index'])->name('students.index');
+    Route::post('students/{student}/reset-password', [StudentController::class, 'resetPassword'])->name('students.reset-password');
+    Route::delete('students/bulk-delete', [StudentController::class, 'bulkDelete'])->name('students.bulk-delete');
+
+    Route::get('school-years', [SchoolYearController::class, 'index'])->name('school-years.index');
+    Route::post('school-years', [SchoolYearController::class, 'store'])->name('school-years.store');
+    Route::post('school-years/{schoolYear}/activate', [SchoolYearController::class, 'activate'])->name('school-years.activate');
+    Route::delete('school-years/{schoolYear}', [SchoolYearController::class, 'destroy'])->name('school-years.destroy');
+
+    Route::get('audit-logs', [AuditLogController::class, 'index'])->name('audit-logs.index');
+});
+
+// Forced password change reuses the same account settings page
+Route::get('/password/force-change', function () {
+    return redirect()->route('account.edit');
+})->name('password.force-change');
+
+===== C:\xampp\htdocs\clearance-system\resources\views\staff\dashboard-placeholder.blade.php =====
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Staff Dashboard - STI Valencia Clearance System</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-page: #F1F3F7;
+            --bg-card: #FFFFFF;
+            --bg-navy: #0F1B2D;
+            --text-main: #111827;
+            --text-muted: #6B7280;
+            --border-color: #E5E7EB;
+        }
+
+        [data-theme="dark"] {
+            --bg-page: #090F1A;
+            --bg-card: #131E30;
+            --bg-navy: #070C15;
+            --text-main: #E5E7EB;
+            --text-muted: #8B93A3;
+            --border-color: #223047;
+        }
+
+        :root:not([data-theme="dark"]) .navbar {
+            background-color: #FFFFFF;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        :root:not([data-theme="dark"]) .navbar-brand img {
+            filter: none;
+        }
+
+        :root:not([data-theme="dark"]) .nav-link {
+            color: #374151;
+        }
+
+        :root:not([data-theme="dark"]) .nav-link:hover {
+            color: #111827;
+        }
+
+        :root:not([data-theme="dark"]) .live-datetime {
+            color: #6B7280;
+        }
+
+        :root:not([data-theme="dark"]) .theme-toggle {
+            border-color: #D1D5DB;
+            color: #111827;
+        }
+
+        :root:not([data-theme="dark"]) .nav-dropdown-menu {
+            background-color: #FFFFFF;
+            border-color: #E5E7EB;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        :root:not([data-theme="dark"]) .nav-dropdown-menu a {
+            color: #374151;
+        }
+
+        :root:not([data-theme="dark"]) .hero-panel {
+            background-color: #FFFFFF;
+            border-right: 1px solid #E5E7EB;
+        }
+
+        :root:not([data-theme="dark"]) .welcome-heading {
+            color: #6B7280;
+        }
+
+        :root:not([data-theme="dark"]) .welcome-period {
+            color: #6B7280;
+        }
+
+        :root:not([data-theme="dark"]) .welcome-period strong {
+            color: #111827;
+        }
+
+        html {
+            font-size: 15px;
+        }
+
+        html, body {
+            height: 100%;
+        }
+
+        body {
+            font-family: -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            -webkit-font-smoothing: antialiased;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Top navbar --- */
+
+        .navbar {
+            background-color: var(--bg-navy);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            height: 62px;
+            flex-shrink: 0;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+
+        .navbar-brand img {
+            height: 42px;
+            width: auto;
+            display: block;
+            margin-left: 24px;
+        }
+
+        .navbar-links {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .nav-link {
+            position: relative;
+            color: #C4CBD8;
+            text-decoration: none;
+            font-size: 0.87rem;
+            font-weight: 500;
+            padding: 21px 16px;
+            transition: color 0.15s;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            left: 16px;
+            right: 16px;
+            bottom: 0;
+            height: 2px;
+            background-color: #FFC72C;
+            transform: scaleX(0);
+            transform-origin: center;
+            transition: transform 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: #fff;
+        }
+
+        .nav-link:hover::after {
+            transform: scaleX(1);
+        }
+
+        .nav-link.active {
+            color: #FFC72C;
+        }
+
+        .nav-link.active::after {
+            transform: scaleX(1);
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .live-datetime {
+            color: #8B93A3;
+            font-size: 0.78rem;
+            white-space: nowrap;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            font-size: 0.8rem;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .theme-toggle:hover {
+            border-color: #FFC72C;
+        }
+
+        .logout-btn {
+            background-color: transparent;
+            border: 1px solid rgba(220, 38, 38, 0.4);
+            color: #F87171;
+            padding: 7px 14px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.12s;
+            white-space: nowrap;
+        }
+
+        .logout-btn:hover {
+            background-color: rgba(220, 38, 38, 0.15);
+        }
+
+        /* --- Dropdown for Techlab Admin group --- */
+
+        .nav-dropdown {
+            position: relative;
+        }
+
+        .nav-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: var(--bg-navy);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-top: none;
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-6px);
+            transition: opacity 0.15s, transform 0.15s, visibility 0.15s;
+            border-radius: 0 0 8px 8px;
+            overflow: hidden;
+        }
+
+        .nav-dropdown:hover .nav-dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .nav-dropdown-menu a {
+            display: block;
+            padding: 11px 18px;
+            color: #C4CBD8;
+            text-decoration: none;
+            font-size: 0.84rem;
+            border-left: 2px solid transparent;
+        }
+
+        .nav-dropdown-menu a:hover {
+            background-color: rgba(255,255,255,0.05);
+            color: #FFC72C;
+            border-left-color: #FFC72C;
+        }
+
+        /* --- Split hero: navy panel left, image right --- */
+
+        .hero {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+        }
+
+        .hero-panel {
+            width: 35%;
+            background-color: var(--bg-navy);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            padding: 48px 40px 0;
+            flex-shrink: 0;
+        }
+
+        .hero-image {
+            width: 65%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: top center;
+            display: block;
+        }
+
+        .welcome-heading {
+            font-size: 1.1rem;
+            font-weight: 500;
+            color: #C4CBD8;
+            margin-bottom: 4px;
+        }
+
+        .welcome-heading .user-name {
+            display: block;
+            font-size: 1.7rem;
+            font-weight: 700;
+            margin-top: 2px;
+            color: #FFC72C;
+            text-decoration: none;
+            position: relative;
+            width: fit-content;
+            transition: color 0.15s;
+        }
+
+        .welcome-heading .user-name::after {
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: -2px;
+            height: 2px;
+            background-color: #FFC72C;
+            transform: scaleX(0);
+            transform-origin: center;
+            transition: transform 0.2s ease;
+        }
+
+        .welcome-heading .user-name:hover::after {
+            transform: scaleX(1);
+        }
+
+        .welcome-role {
+            display: block;
+            color: #FFC72C;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-top: 6px;
+        }
+
+        .welcome-period {
+            margin-top: 14px;
+            color: #C4CBD8;
+            font-size: 0.9rem;
+        }
+
+        .welcome-period strong {
+            color: #fff;
+        }
+
+        /* --- Phone held upright: big greeting on top, the whole photo along the bottom edge --- */
+
+        @media (max-aspect-ratio: 1/1) and (max-width: 1000px) {
+            .hero {
+                flex-direction: column;
+            }
+
+            .hero-panel,
+            :root:not([data-theme="dark"]) .hero-panel {
+                width: 100%;
+                flex: 1;
+                justify-content: center;
+                padding: 48px 48px;
+                border-right: 0;
+            }
+
+            [data-theme="dark"] .hero-panel {
+                background:
+                    radial-gradient(circle at 12% 18%, rgba(255, 199, 44, 0.12), transparent 48%),
+                    var(--bg-navy);
+            }
+
+            :root:not([data-theme="dark"]) .hero-panel {
+                border-bottom: 1px solid #E5E7EB;
+            }
+
+            .welcome-heading {
+                font-size: 2.5rem;
+                margin-bottom: 8px;
+            }
+
+            .welcome-heading .user-name {
+                font-size: 4.6rem;
+                line-height: 1.05;
+                margin-top: 6px;
+            }
+
+            .welcome-role {
+                font-size: 2.6rem;
+                margin-top: 16px;
+            }
+
+            .welcome-period {
+                font-size: 2.2rem;
+                line-height: 1.3;
+                margin-top: 22px;
+            }
+
+            .hero-image {
+                width: 100%;
+                flex: none;
+            }
+
+            .hero-image img {
+                height: auto;
+                object-fit: contain;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="{{ asset('css/phone-scaled.css') }}">
+    <script src="{{ asset('js/phone-scaled.js') }}" defer></script>
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-brand">
+            <a href="{{ auth('student')->check() ? route('student.dashboard') : route('staff.dashboard') }}" title="Go to dashboard" style="display:block;"><img src="{{ asset('images/sti_val_logo.png') }}" alt="STI Valencia Logo"></a>
+        </div>
+
+        <div class="navbar-links">
+            <a href="{{ route('staff.clearance.index') }}" class="nav-link">Clearance Approvals</a>
+            <a href="{{ route('account.edit') }}" class="nav-link">Account Settings</a>
+
+            @if (auth('web')->user()->department?->is_registrar)
+                <a href="{{ route('registrar.clearance-status') }}" class="nav-link">Full Clearance Status</a>
+            @endif
+
+            @if (auth('web')->user()->department?->is_techlab)
+                <div class="nav-dropdown">
+                    <span class="nav-link">Techlab Admin â–¾</span>
+                    <div class="nav-dropdown-menu">
+                        <a href="{{ route('techlab.departments.index') }}">Manage Departments</a>
+                        <a href="{{ route('techlab.students.import.create') }}">Import Students</a>
+                        <a href="{{ route('techlab.students.index') }}">Manage Students</a>
+                        <a href="{{ route('techlab.school-years.index') }}">School Years</a>
+                        <a href="{{ route('techlab.audit-logs.index') }}">Audit Log</a>
+                    </div>
+                </div>
+            @endif
+        </div>
+
+        <div class="navbar-right">
+            <span class="live-datetime" id="liveDateTime"></span>
+            <button type="button" class="theme-toggle" id="themeToggle" title="Toggle theme">ðŸŒ™</button>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="logout-btn">Log Out</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="hero">
+        <div class="hero-panel">
+            <h1 class="welcome-heading">Welcome, <span class="user-name">{{ auth('web')->user()->name }}</span></h1>
+            <div class="welcome-role">{{ auth('web')->user()->department->name ?? 'Unassigned Department' }}</div>
+            <div class="welcome-period">Active academic period: <strong>{{ $activeSchoolYear->year_label ?? 'No active school year set' }}</strong></div>
+        </div>
+
+        <div class="hero-image">
+            <img src="{{ asset('images/1.png') }}" alt="STI Valencia">
+        </div>
+    </div>
+
+    <script>
+        function updateDateTime() {
+            const now = new Date();
+            const options = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' };
+            document.getElementById('liveDateTime').textContent = now.toLocaleString('en-US', options);
+        }
+        updateDateTime();
+        setInterval(updateDateTime, 1000 * 30);
+
+        const toggleBtn = document.getElementById('themeToggle');
+        const root = document.documentElement;
+
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        root.setAttribute('data-theme', savedTheme);
+        toggleBtn.textContent = savedTheme === 'dark' ? 'ðŸŒ™' : 'â˜€ï¸';
+
+        toggleBtn.addEventListener('click', () => {
+            const current = root.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            root.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+            toggleBtn.textContent = next === 'dark' ? 'ðŸŒ™' : 'â˜€ï¸';
+        });
+    </script>
+</body>
+</html>
+
+===== C:\xampp\htdocs\clearance-system\resources\views\staff\clearance\index.blade.php =====
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Clearance Approvals - {{ $department->name }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg-page: #F1F3F7;
+            --bg-card: #FFFFFF;
+            --bg-navy: #0F1B2D;
+            --text-main: #111827;
+            --text-muted: #6B7280;
+            --border-color: #E5E7EB;
+            --table-header-bg: #0F1B2D;
+        }
+
+        [data-theme="dark"] {
+            --bg-page: #090F1A;
+            --bg-card: #131E30;
+            --bg-navy: #070C15;
+            --text-main: #E5E7EB;
+            --text-muted: #8B93A3;
+            --border-color: #223047;
+            --table-header-bg: #16233A;
+        }
+
+        html {
+            font-size: 15px;
+        }
+
+        body {
+            font-family: -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* --- Top navbar --- */
+
+        .navbar {
+            background-color: var(--bg-navy);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 32px;
+            height: 62px;
+            position: sticky;
+            top: 0;
+            z-index: 20;
+        }
+
+        .navbar-brand img {
+            height: 42px;
+            width: auto;
+            display: block;
+            margin-left: 24px;
+        }
+
+        .navbar-links {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .nav-link {
+            position: relative;
+            color: #C4CBD8;
+            text-decoration: none;
+            font-size: 0.87rem;
+            font-weight: 500;
+            padding: 21px 16px;
+            transition: color 0.15s;
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            left: 16px;
+            right: 16px;
+            bottom: 0;
+            height: 2px;
+            background-color: #FFC72C;
+            transform: scaleX(0);
+            transform-origin: center;
+            transition: transform 0.2s ease;
+        }
+
+        .nav-link:hover {
+            color: #fff;
+        }
+
+        .nav-link:hover::after {
+            transform: scaleX(1);
+        }
+
+        .nav-link.active {
+            color: #FFC72C;
+        }
+
+        .nav-link.active::after {
+            transform: scaleX(1);
+        }
+
+        .navbar-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .live-datetime {
+            color: #8B93A3;
+            font-size: 0.78rem;
+            white-space: nowrap;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: 1px solid rgba(255,255,255,0.2);
+            color: #fff;
+            font-size: 0.8rem;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .theme-toggle:hover {
+            border-color: #FFC72C;
+        }
+
+        .logout-btn {
+            background-color: transparent;
+            border: 1px solid rgba(220, 38, 38, 0.4);
+            color: #F87171;
+            padding: 7px 14px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.12s;
+            white-space: nowrap;
+        }
+
+        .logout-btn:hover {
+            background-color: rgba(220, 38, 38, 0.15);
+        }
+
+        /* --- Dropdown for Techlab Admin group --- */
+
+        .nav-dropdown {
+            position: relative;
+        }
+
+        .nav-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: var(--bg-navy);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-top: none;
+            min-width: 200px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-6px);
+            transition: opacity 0.15s, transform 0.15s, visibility 0.15s;
+            border-radius: 0 0 8px 8px;
+            overflow: hidden;
+        }
+
+        .nav-dropdown:hover .nav-dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .nav-dropdown-menu a {
+            display: block;
+            padding: 11px 18px;
+            color: #C4CBD8;
+            text-decoration: none;
+            font-size: 0.84rem;
+            border-left: 2px solid transparent;
+        }
+
+        .nav-dropdown-menu a:hover {
+            background-color: rgba(255,255,255,0.05);
+            color: #FFC72C;
+            border-left-color: #FFC72C;
+        }
+
+        /* --- Main content --- */
+
+        .main-content {
+            padding: 36px 32px;
+            max-width: 1320px;
+            margin: 0 auto;
+        }
+
+        .page-header {
+            margin-bottom: 26px;
+        }
+
+        .page-heading {
+            font-size: 1.35rem;
+            font-weight: 700;
+            letter-spacing: -0.2px;
+            margin-bottom: 3px;
+        }
+
+        .page-sub {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        .success-banner {
+            background-color: rgba(22, 163, 74, 0.08);
+            border: 1px solid rgba(22, 163, 74, 0.35);
+            color: #15803D;
+            padding: 11px 16px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        [data-theme="dark"] .success-banner {
+            color: #4ADE80;
+        }
+
+        /* --- Filter toolbar --- */
+
+        .filter-bar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 20px;
+            align-items: center;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            padding: 10px 12px;
+        }
+
+        .filter-bar input[type="text"] {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 7px;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            font-size: 0.83rem;
+            font-family: inherit;
+            min-width: 190px;
+            flex: 1;
+        }
+
+        .filter-bar input[type="text"]:focus {
+            outline: none;
+            border-color: #FFC72C;
+        }
+
+        .btn-filter {
+            background-color: var(--bg-navy);
+            color: #fff;
+            font-weight: 600;
+            border: none;
+            padding: 9px 18px;
+            border-radius: 7px;
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: opacity 0.12s;
+        }
+
+        .btn-filter:hover {
+            opacity: 0.85;
+        }
+
+        .reset-link {
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            text-decoration: none;
+            padding: 0 6px;
+        }
+
+        .reset-link:hover {
+            color: #FFC72C;
+        }
+
+        .filter-dropdown {
+            position: relative;
+        }
+
+        .filter-dropdown-trigger {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 7px;
+            background-color: var(--bg-page);
+            color: var(--text-main);
+            font-size: 0.83rem;
+            font-family: inherit;
+            cursor: default;
+            white-space: nowrap;
+            display: inline-block;
+        }
+
+        .filter-dropdown-menu {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: 4px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            min-width: 160px;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-6px);
+            transition: opacity 0.15s, transform 0.15s, visibility 0.15s;
+            z-index: 15;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .filter-dropdown:hover .filter-dropdown-menu {
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+        }
+
+        .filter-dropdown-menu a {
+            display: block;
+            padding: 9px 14px;
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 0.83rem;
+        }
+
+        .filter-dropdown-menu a:hover {
+            background-color: rgba(255, 199, 44, 0.1);
+            color: #B8860B;
+        }
+
+        .filter-dropdown-menu a.active {
+            color: #FFC72C;
+            font-weight: 600;
+        }
+
+        /* --- Table --- */
+
+        .table-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead th {
+            background-color: var(--table-header-bg);
+            color: #C4CBD8;
+            padding: 12px 18px;
+            text-align: left;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+        }
+
+        tbody td {
+            padding: 13px 18px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.85rem;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: rgba(128, 128, 128, 0.025);
+        }
+
+        tbody tr:hover {
+            background-color: rgba(255, 199, 44, 0.05);
+        }
+
+        .student-name {
+            font-weight: 600;
+        }
+
+        .student-id {
+            color: var(--text-muted);
+            font-size: 0.78rem;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 3px 9px;
+            border-radius: 4px;
+            font-size: 0.72rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.4px;
+            border: 1px solid transparent;
+        }
+
+        .badge.pending {
+            background-color: transparent;
+            border-color: #D1D5DB;
+            color: #6B7280;
+        }
+
+        .badge.cleared {
+            background-color: transparent;
+            border-color: #86EFAC;
+            color: #15803D;
+        }
+
+        .badge.rejected {
+            background-color: transparent;
+            border-color: #FCA5A5;
+            color: #B91C1C;
+        }
+
+        [data-theme="dark"] .badge.pending { border-color: #4B5563; color: #9CA3AF; }
+        [data-theme="dark"] .badge.cleared { border-color: #166534; color: #4ADE80; }
+        [data-theme="dark"] .badge.rejected { border-color: #7F1D1D; color: #F87171; }
+
+        .action-btn {
+            border: 1px solid var(--border-color);
+            background-color: transparent;
+            color: var(--text-main);
+            padding: 5px 11px;
+            border-radius: 5px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            margin-right: 6px;
+            transition: background-color 0.12s, border-color 0.12s;
+        }
+
+        .btn-clear:hover {
+            background-color: rgba(22, 163, 74, 0.08);
+            border-color: #16A34A;
+            color: #15803D;
+        }
+
+        .btn-reject:hover {
+            background-color: rgba(220, 38, 38, 0.08);
+            border-color: #DC2626;
+            color: #B91C1C;
+        }
+
+        .empty-row {
+            text-align: center;
+            color: var(--text-muted);
+            padding: 40px;
+            font-size: 0.88rem;
+        }
+
+        .pagination-wrap {
+            margin-top: 18px;
+            font-size: 0.82rem;
+        }
+    </style>
+    <link rel="stylesheet" href="{{ asset('css/phone-scaled.css') }}">
+    <script src="{{ asset('js/phone-scaled.js') }}" defer></script>
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-brand">
+            <a href="{{ auth('student')->check() ? route('student.dashboard') : route('staff.dashboard') }}" title="Go to dashboard" style="display:block;"><img src="{{ asset('images/sti_val_logo.png') }}" alt="STI Valencia Logo"></a>
+        </div>
+
+        <div class="navbar-links">
+            <a href="{{ route('staff.clearance.index') }}" class="nav-link active">Clearance Approvals</a>
+            <a href="{{ route('account.edit') }}" class="nav-link">Account Settings</a>
+
+            @if (auth('web')->user()->department?->is_registrar)
+                <a href="{{ route('registrar.clearance-status') }}" class="nav-link">Full Clearance Status</a>
+            @endif
+
+            @if (auth('web')->user()->department?->is_techlab)
+                <div class="nav-dropdown">
+                    <span class="nav-link">Techlab Admin â–¾</span>
+                    <div class="nav-dropdown-menu">
+                        <a href="{{ route('techlab.departments.index') }}">Manage Departments</a>
+                        <a href="{{ route('techlab.students.import.create') }}">Import Students</a>
+                        <a href="{{ route('techlab.students.index') }}">Manage Students</a>
+                        <a href="{{ route('techlab.school-years.index') }}">School Years</a>
+                        <a href="{{ route('techlab.audit-logs.index') }}">Audit Log</a>
+                    </div>
+                </div>
+            @endif
+        </div>
+
+        <div class="navbar-right">
+            <span class="live-datetime" id="liveDateTime"></span>
+            <button type="button" class="theme-toggle" id="themeToggle" title="Toggle theme">ðŸŒ™</button>
+            <form method="POST" action="{{ route('logout') }}">
+                @csrf
+                <button type="submit" class="logout-btn">Log Out</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="page-header">
+            <h1 class="page-heading">Clearance Approvals</h1>
+            <p class="page-sub">{{ $department->name }} &middot; {{ $activeSchoolYear->year_label ?? 'No active school year' }}</p>
+        </div>
+
+        @if (session('success'))
+            <div class="success-banner">{{ session('success') }}</div>
+        @endif
+
+        <form method="GET" action="{{ route('staff.clearance.index') }}" class="filter-bar">
+            <input type="text" name="search" placeholder="Search name or student ID" value="{{ request('search') }}">
+
+            <div class="filter-dropdown">
+                <div class="filter-dropdown-trigger">{{ ucfirst(request('status')) ?: 'All Statuses' }} â–¾</div>
+                <div class="filter-dropdown-menu">
+                    <a href="{{ request()->fullUrlWithQuery(['status' => null]) }}" class="{{ !request('status') ? 'active' : '' }}">All Statuses</a>
+                    <a href="{{ request()->fullUrlWithQuery(['status' => 'pending']) }}" class="{{ request('status') === 'pending' ? 'active' : '' }}">Pending</a>
+                    <a href="{{ request()->fullUrlWithQuery(['status' => 'cleared']) }}" class="{{ request('status') === 'cleared' ? 'active' : '' }}">Cleared</a>
+                    <a href="{{ request()->fullUrlWithQuery(['status' => 'rejected']) }}" class="{{ request('status') === 'rejected' ? 'active' : '' }}">Rejected</a>
+                </div>
+            </div>
+
+            <div class="filter-dropdown">
+                <div class="filter-dropdown-trigger">{{ request('course') ?: 'All Courses' }} â–¾</div>
+                <div class="filter-dropdown-menu">
+                    <a href="{{ request()->fullUrlWithQuery(['course' => null]) }}" class="{{ !request('course') ? 'active' : '' }}">All Courses</a>
+                    <a href="{{ request()->fullUrlWithQuery(['course' => 'BSIS']) }}" class="{{ request('course') === 'BSIS' ? 'active' : '' }}">BSIS</a>
+                    <a href="{{ request()->fullUrlWithQuery(['course' => 'BSTM']) }}" class="{{ request('course') === 'BSTM' ? 'active' : '' }}">BSTM</a>
+                    <a href="{{ request()->fullUrlWithQuery(['course' => 'ABM']) }}" class="{{ request('course') === 'ABM' ? 'active' : '' }}">ABM</a>
+                    <a href="{{ request()->fullUrlWithQuery(['course' => 'HUMSS']) }}" class="{{ request('course') === 'HUMSS' ? 'active' : '' }}">HUMSS</a>
+                </div>
+            </div>
+
+            <div class="filter-dropdown">
+                <div class="filter-dropdown-trigger">
+                    @php
+                        $yearLabels = ['1' => '1st Year', '2' => '2nd Year', '3' => '3rd Year', '4' => '4th Year', '11' => 'Grade 11', '12' => 'Grade 12'];
+                    @endphp
+                    {{ $yearLabels[request('year_level')] ?? 'All Years' }} â–¾
+                </div>
+                <div class="filter-dropdown-menu">
+                    <a href="{{ request()->fullUrlWithQuery(['year_level' => null]) }}" class="{{ !request('year_level') ? 'active' : '' }}">All Years</a>
+                    @foreach ($yearLabels as $value => $label)
+                        <a href="{{ request()->fullUrlWithQuery(['year_level' => $value]) }}" class="{{ request('year_level') === $value ? 'active' : '' }}">{{ $label }}</a>
+                    @endforeach
+                </div>
+            </div>
+
+            <div class="filter-dropdown">
+                <div class="filter-dropdown-trigger">{{ request('section') ?: 'All Sections' }} â–¾</div>
+                <div class="filter-dropdown-menu">
+                    <a href="{{ request()->fullUrlWithQuery(['section' => null]) }}" class="{{ !request('section') ? 'active' : '' }}">All Sections</a>
+                    <a href="{{ request()->fullUrlWithQuery(['section' => 'A']) }}" class="{{ request('section') === 'A' ? 'active' : '' }}">A</a>
+                    <a href="{{ request()->fullUrlWithQuery(['section' => 'B']) }}" class="{{ request('section') === 'B' ? 'active' : '' }}">B</a>
+                    <a href="{{ request()->fullUrlWithQuery(['section' => 'C']) }}" class="{{ request('section') === 'C' ? 'active' : '' }}">C</a>
+                </div>
+            </div>
+
+            <button type="submit" class="btn-filter">Search</button>
+            <a href="{{ route('staff.clearance.index') }}" class="reset-link">Reset</a>
+        </form>
+
+        <div class="table-card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student</th>
+                        <th>Course & Section</th>
+                        <th>Status</th>
+                        <th>Remarks</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($clearanceItems as $item)
+                        <tr>
+                            <td>
+                                <div class="student-name">{{ $item->student->last_name }}, {{ $item->student->first_name }}</div>
+                                <div class="student-id">{{ $item->student->student_number }}</div>
+                            </td>
+                            <td>{{ $item->student->course }} {{ $item->student->year_level }}{{ $item->student->section }}</td>
+                            <td><span class="badge {{ $item->status }}">{{ ucfirst($item->status) }}</span></td>
+                            <td>{{ $item->remarks ?? 'â€”' }}</td>
+                            <td>
+                                @if ($item->status === 'pending')
+                                    <form method="POST" action="{{ route('staff.clearance.clear', $item) }}" style="display:inline;">
+                                        @csrf
+                                        <button type="submit" class="action-btn btn-clear">Mark Cleared</button>
+                                    </form>
+
+                                    <form method="POST" action="{{ route('staff.clearance.reject', $item) }}" style="display:inline;" onsubmit="return promptReject(event, this);">
+                                        @csrf
+                                        <input type="hidden" name="remarks" class="reject-remarks">
+                                        <button type="submit" class="action-btn btn-reject">Reject</button>
+                                    </form>
+                                @else
+                                    <form method="POST" action="{{ route('staff.clearance.revert', $item) }}" style="display:inline;" onsubmit="return confirm('Revert this student back to Pending?');">
+                                        @csrf
+                                        <button type="submit" class="action-btn">Undo</button>
+                                    </form>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="empty-row">No students found matching these filters.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination-wrap">
+            {{ $clearanceItems->links() }}
+        </div>
+    </div>
+
+    <script>
+        function updateDateTime() {
+            const now = new Date();
+            const options = { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit' };
+            document.getElementById('liveDateTime').textContent = now.toLocaleString('en-US', options);
+        }
+        updateDateTime();
+        setInterval(updateDateTime, 1000 * 30);
+
+        const toggleBtn = document.getElementById('themeToggle');
+        const root = document.documentElement;
+
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        root.setAttribute('data-theme', savedTheme);
+        toggleBtn.textContent = savedTheme === 'dark' ? 'ðŸŒ™' : 'â˜€ï¸';
+
+        toggleBtn.addEventListener('click', () => {
+            const current = root.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            root.setAttribute('data-theme', next);
+            localStorage.setItem('theme', next);
+            toggleBtn.textContent = next === 'dark' ? 'ðŸŒ™' : 'â˜€ï¸';
+        });
+
+        function promptReject(event, form) {
+            const reason = prompt('Reason for rejection:');
+            if (!reason) {
+                event.preventDefault();
+                return false;
+            }
+            form.querySelector('.reject-remarks').value = reason;
+            return true;
+        }
+    </script>
+</body>
+</html>
+
+===== C:\xampp\htdocs\clearance-system\app\Http\Controllers\Staff\ClearanceController.php =====
+<?php
+
+namespace App\Http\Controllers\Staff;
+
+use App\Http\Controllers\Controller;
+use App\Mail\ClearanceUpdated;
+use App\Models\AuditLog;
+use App\Models\ClearanceItem;
+use App\Models\SchoolYear;
+use App\Models\Student;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+
+class ClearanceController extends Controller
+{
+    /**
+     * List students for this department's clearance queue, with search/filter.
+     */
+    public function index(Request $request)
+    {
+        $user = Auth::guard('web')->user();
+        $department = $user->department;
+
+        $activeSchoolYear = SchoolYear::where('is_active', true)->first();
+
+        $query = ClearanceItem::with('student')
+            ->where('clearance_items.department_id', $department->id)
+            ->where('clearance_items.school_year_id', $activeSchoolYear?->id);
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->whereHas('student', function ($q) use ($search) {
+                $q->where('first_name', 'like', "%{$search}%")
+                    ->orWhere('last_name', 'like', "%{$search}%")
+                    ->orWhere('student_number', 'like', "%{$search}%");
+            });
+        }
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->input('status'));
+        }
+
+        if ($request->filled('course')) {
+            $query->whereHas('student', fn ($q) => $q->where('course', $request->input('course')));
+        }
+
+        if ($request->filled('year_level')) {
+            $query->whereHas('student', fn ($q) => $q->where('year_level', $request->input('year_level')));
+        }
+
+        if ($request->filled('section')) {
+            $query->whereHas('student', fn ($q) => $q->where('section', $request->input('section')));
+        }
+
+        $clearanceItems = $query
+            ->join('students', 'clearance_items.student_id', '=', 'students.id')
+            ->orderBy('students.last_name')
+            ->orderBy('students.first_name')
+            ->select('clearance_items.*')
+            ->paginate(20)
+            ->withQueryString();
+
+        return view('staff.clearance.index', [
+            'department' => $department,
+            'activeSchoolYear' => $activeSchoolYear,
+            'clearanceItems' => $clearanceItems,
+            'courses' => Student::distinct()->pluck('course')->sort()->values(),
+            'yearLevels' => Student::distinct()->pluck('year_level')->sort()->values(),
+            'sections' => Student::distinct()->pluck('section')->sort()->values(),
+        ]);
+    }
+
+    /**
+     * Mark a student cleared for this department.
+     */
+    public function markCleared(ClearanceItem $clearanceItem)
+    {
+        $user = Auth::guard('web')->user();
+
+        abort_if($clearanceItem->department_id !== $user->department_id, 403);
+
+        $clearanceItem->update([
+            'status' => 'cleared',
+            'remarks' => null,
+            'signed_by' => $user->id,
+            'signed_at' => now(),
+        ]);
+
+        $emailed = $this->sendClearanceEmail($clearanceItem);
+
+        AuditLog::record(
+            'clearance.cleared',
+            $this->describe($clearanceItem),
+            $emailed ? 'Email notification sent' : 'Email notification could not be sent'
+        );
+
+        return back()->with('success', $emailed
+            ? 'Student marked as cleared and notified by email.'
+            : 'Student marked as cleared, but the email notification could not be sent.');
+    }
+
+    /**
+     * Revert a cleared or rejected student back to pending.
+     */
+    public function revert(ClearanceItem $clearanceItem)
+    {
+        $user = Auth::guard('web')->user();
+
+        abort_if($clearanceItem->department_id !== $user->department_id, 403);
+
+        $previousStatus = $clearanceItem->status;
+
+        $clearanceItem->update([
+            'status' => 'pending',
+            'remarks' => null,
+            'signed_by' => null,
+            'signed_at' => null,
+        ]);
+
+        AuditLog::record(
+            'clearance.reverted',
+            $this->describe($clearanceItem),
+            "Changed from {$previousStatus} back to pending"
+        );
+
+        return back()->with('success', 'Status reverted to pending.');
+    }
+
+    /**
+     * Mark a student rejected for this department, with a remark.
+     */
+    public function reject(Request $request, ClearanceItem $clearanceItem)
+    {
+        $user = Auth::guard('web')->user();
+
+        abort_if($clearanceItem->department_id !== $user->department_id, 403);
+
+        $validated = $request->validate([
+            'remarks' => ['required', 'string', 'max:255'],
+        ]);
+
+        $clearanceItem->update([
+            'status' => 'rejected',
+            'remarks' => $validated['remarks'],
+            'signed_by' => $user->id,
+            'signed_at' => now(),
+        ]);
+
+        $emailed = $this->sendClearanceEmail($clearanceItem);
+
+        AuditLog::record(
+            'clearance.rejected',
+            $this->describe($clearanceItem),
+            'Reason: ' . $validated['remarks'] . '. '
+                . ($emailed ? 'Email notification sent.' : 'Email notification could not be sent.')
+        );
+
+        return back()->with('success', $emailed
+            ? 'Student marked as rejected and notified by email.'
+            : 'Student marked as rejected, but the email notification could not be sent.');
+    }
+
+    /**
+     * A readable label for the audit log, for example
+     * "Villarba, Faith (370758) - Cashier".
+     */
+    private function describe(ClearanceItem $clearanceItem): string
+    {
+        $clearanceItem->loadMissing(['student', 'department']);
+
+        $student = $clearanceItem->student;
+
+        return "{$student->last_name}, {$student->first_name} ({$student->student_number}) - {$clearanceItem->department->name}";
+    }
+
+    /**
+     * Send the clearance update email to the student, without blocking
+     * the request if mail fails for any reason.
+     */
+    private function sendClearanceEmail(ClearanceItem $clearanceItem): bool
+    {
+        $clearanceItem->load(['student', 'department', 'schoolYear']);
+
+        if (! $clearanceItem->student?->email) {
+            return false;
+        }
+
+        try {
+            Mail::to($clearanceItem->student->email)->send(new ClearanceUpdated($clearanceItem));
+
+            return true;
+        } catch (\Throwable $e) {
+            report($e);
+
+            return false;
+        }
+    }
+}
+
+===== C:\xampp\htdocs\clearance-system\resources\views\components\student-notifications.blade.php =====
+<div class="sn-wrap" id="snWrap">
+    <button type="button" class="sn-bell" id="snBell" aria-label="Notifications" aria-haspopup="true" aria-expanded="false" title="Notifications">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 8a6 6 0 1 1 12 0c0 4.5 1.6 6.3 2.4 7.1.3.3.1.9-.4.9H4c-.5 0-.7-.6-.4-.9C4.4 14.3 6 12.5 6 8Z"></path><path d="M10 19.5a2.2 2.2 0 0 0 4 0"></path></svg>
+        @if ($unseen > 0)
+            <span class="sn-badge" id="snBadge"></span>
+        @endif
+    </button>
+
+    <div class="sn-panel" id="snPanel" role="dialog" aria-label="Notifications">
+        <div class="sn-head">Notifications</div>
+
+        @forelse ($items as $item)
+            @php($isNew = ! $seenAt || $item->updated_at->gt($seenAt))
+            <div class="sn-item {{ $isNew ? 'is-new' : '' }}">
+                <span class="sn-mark {{ $item->status }}"></span>
+                <div class="sn-text">
+                    <div class="sn-title">{{ $item->department?->name ?? 'An office' }} <span class="sn-state {{ $item->status }}">{{ $item->status === 'cleared' ? 'cleared you' : 'rejected' }}</span></div>
+                    @if ($item->status === 'rejected' && $item->remarks)
+                        <div class="sn-note">{{ \Illuminate\Support\Str::limit($item->remarks, 90) }}</div>
+                    @endif
+                </div>
+                <div class="sn-time">{{ $item->updated_at->diffForHumans(null, true, true) }}</div>
+            </div>
+        @empty
+            <div class="sn-empty">No updates yet</div>
+        @endforelse
+    </div>
+</div>
+
+<style>
+    .sn-wrap { position: relative; display: inline-flex; align-items: center; }
+    .sn-bell { position: relative; width: 36px; height: 36px; border-radius: 50%; background: transparent; border: 0; color: inherit; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; padding: 0; opacity: .85; transition: opacity .15s, background .15s; }
+    .sn-bell:hover, .sn-wrap.open .sn-bell { opacity: 1; background: rgba(128, 128, 128, 0.18); }
+    .sn-bell svg { width: 21px; height: 21px; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+    .sn-badge { position: absolute; top: 6px; right: 7px; width: 9px; height: 9px; border-radius: 50%; background: #EF4444; box-shadow: 0 0 0 2px var(--sn-bg, #0F1B2D); }
+
+    .sn-panel { display: none; position: absolute; top: 44px; right: 0; width: 300px; max-height: 70vh; overflow-y: auto; background: #131F35; color: #F1F5FB; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35); z-index: 1000; text-align: left; }
+    .sn-wrap.open .sn-panel { display: block; }
+    .sn-head { padding: 13px 16px; font-size: 0.9rem; font-weight: 600; border-bottom: 1px solid rgba(255, 255, 255, 0.08); }
+    .sn-item { display: flex; align-items: flex-start; gap: 10px; padding: 11px 16px; font-size: 0.85rem; line-height: 1.35; }
+    .sn-item + .sn-item { border-top: 1px solid rgba(255, 255, 255, 0.06); }
+    .sn-mark { flex-shrink: 0; width: 8px; height: 8px; margin-top: 6px; border-radius: 50%; background: transparent; box-shadow: inset 0 0 0 1.5px #6B7A92; }
+    .sn-item.is-new .sn-mark { background: #EF4444; box-shadow: none; }
+    .sn-text { flex: 1; min-width: 0; }
+    .sn-title { font-weight: 500; }
+    .sn-state { font-weight: 400; }
+    .sn-state.cleared { color: #4ADE80; }
+    .sn-state.rejected { color: #F87171; }
+    .sn-note { color: #A9B6CA; font-size: 0.8rem; margin-top: 2px; }
+    .sn-time { flex-shrink: 0; font-size: 0.75rem; color: #7F8DA3; padding-top: 1px; }
+    .sn-empty { padding: 18px 16px; color: #A9B6CA; font-size: 0.85rem; }
+
+    [data-theme="light"] .sn-badge { box-shadow: 0 0 0 2px var(--sn-bg, #fff); }
+    [data-theme="light"] .sn-panel { background: #fff; color: #0F1B2D; border-color: #E3E8F0; box-shadow: 0 12px 32px rgba(15, 27, 45, 0.14); }
+    [data-theme="light"] .sn-head { border-color: #EDF0F5; }
+    [data-theme="light"] .sn-item + .sn-item { border-color: #F1F3F8; }
+    [data-theme="light"] .sn-mark { box-shadow: inset 0 0 0 1.5px #A8B2C3; }
+    [data-theme="light"] .sn-state.cleared { color: #15803D; }
+    [data-theme="light"] .sn-state.rejected { color: #DC2626; }
+    [data-theme="light"] .sn-note, [data-theme="light"] .sn-empty { color: #5B6679; }
+    [data-theme="light"] .sn-time { color: #8190A5; }
+    @media (max-width: 640px) {
+        .sn-wrap { position: static; }
+        .sn-panel { position: fixed; top: 70px; left: 50%; right: auto; width: calc(100vw - 32px); max-width: 320px; max-height: 60vh; transform: translateX(-50%); border-radius: 14px; box-shadow: 0 16px 48px rgba(0, 0, 0, 0.45); }
+    }
+</style>
+
+<script>
+    (function () {
+        var wrap = document.getElementById('snWrap');
+        if (!wrap) { return; }
+
+        var bell = document.getElementById('snBell');
+        var marked = false;
+
+        function close() {
+            wrap.classList.remove('open');
+            bell.setAttribute('aria-expanded', 'false');
+        }
+
+        bell.addEventListener('click', function (event) {
+            event.stopPropagation();
+
+            var open = wrap.classList.toggle('open');
+            bell.setAttribute('aria-expanded', open ? 'true' : 'false');
+
+            var badge = document.getElementById('snBadge');
+
+            // Opening the bell marks the results as seen, so the red badge goes away
+            if (open && badge && !marked) {
+                marked = true;
+
+                fetch('{{ \Illuminate\Support\Facades\Route::has('student.notifications.seen') ? route('student.notifications.seen') : '#' }}', {
+                    method: 'POST',
+                    headers: { 'X-CSRF-TOKEN': '{{ csrf_token() }}', 'X-Requested-With': 'XMLHttpRequest' },
+                    credentials: 'same-origin'
+                }).then(function (response) {
+                    if (response.ok) { badge.remove(); } else { marked = false; }
+                }).catch(function () { marked = false; });
+            }
+        });
+
+        document.addEventListener('click', function (event) {
+            if (!wrap.contains(event.target)) { close(); }
+        });
+
+        document.addEventListener('keydown', function (event) {
+            if (event.key === 'Escape') { close(); }
+        });
+    })();
+</script>

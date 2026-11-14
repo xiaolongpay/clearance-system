@@ -38,7 +38,12 @@ Route::middleware('auth:student')->group(function () {
     Route::get('/student/dashboard', [DashboardController::class, 'index'])->name('student.dashboard');
     Route::get('/student/clearance-pdf', [ClearancePdfController::class, 'download'])->name('student.clearance-pdf');
     Route::post('/student/notifications/seen', [\App\Http\Controllers\Student\NotificationController::class, 'seen'])->name('student.notifications.seen');
+    Route::post('/student/uploads/{clearanceItem}', [\App\Http\Controllers\Student\UploadController::class, 'store'])->name('student.uploads.store');
+    Route::delete('/student/uploads/{upload}', [\App\Http\Controllers\Student\UploadController::class, 'destroy'])->name('student.uploads.destroy');
 });
+
+// Open an attachment (the student who sent it, the office it was sent to, and Techlab)
+Route::middleware('auth:web,student')->get('/uploads/{upload}', [\App\Http\Controllers\UploadFileController::class, 'show'])->name('uploads.show');
 
 // Account settings (shared by both students and staff)
 Route::middleware('auth:web,student')->group(function () {
@@ -52,6 +57,7 @@ Route::middleware('auth:web')->prefix('staff')->name('staff.')->group(function (
     Route::post('clearance/{clearanceItem}/clear', [ClearanceController::class, 'markCleared'])->name('clearance.clear');
     Route::post('clearance/{clearanceItem}/reject', [ClearanceController::class, 'reject'])->name('clearance.reject');
     Route::post('clearance/{clearanceItem}/revert', [ClearanceController::class, 'revert'])->name('clearance.revert');
+    Route::post('notifications/seen', [\App\Http\Controllers\Staff\NotificationController::class, 'seen'])->name('notifications.seen');
 });
 
 // Registrar-only view

@@ -513,6 +513,7 @@
 
         <div class="navbar-right">
             <span class="live-datetime" id="liveDateTime"></span>
+            <x-staff-notifications />
             <button type="button" class="theme-toggle" id="themeToggle" title="Toggle theme">🌙</button>
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
@@ -580,6 +581,8 @@
                 </div>
             </div>
 
+            @include('staff.partials.upload-filter')
+
             <button type="submit" class="btn-filter">Search</button>
             <a href="{{ route('staff.clearance.index') }}" class="reset-link">Reset</a>
         </form>
@@ -601,6 +604,7 @@
                             <td>
                                 <div class="student-name">{{ $item->student->last_name }}, {{ $item->student->first_name }}</div>
                                 <div class="student-id">{{ $item->student->student_number }}</div>
+                                @include('staff.partials.attachments-link', ['item' => $item])
                             </td>
                             <td>{{ $item->student->course }} {{ $item->student->year_level }}{{ $item->student->section }}</td>
                             <td><span class="badge {{ $item->status }}">{{ ucfirst($item->status) }}</span></td>
@@ -673,5 +677,6 @@
             return true;
         }
     </script>
+    @include('staff.partials.attachments-modal')
 </body>
 </html>
