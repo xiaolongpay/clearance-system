@@ -358,6 +358,7 @@
                 <li>We keep only the details needed to process your clearance.</li>
                 <li>Your information is used for clearance and for email notices about it, and for nothing else.</li>
                 <li>Only your own account, the offices that clear you, the Registrar, and the Techlab Office can see your record.</li>
+                <li>Files and links you attach can be opened only by you, the office you sent them to, and the Techlab Office. Attaching is optional, so send only what an office asks for.</li>
                 <li>Emails are sent through Google's Gmail service, so Google handles those messages.</li>
                 <li>You can ask the Techlab Office to correct your details at any time.</li>
             </ul>
@@ -382,8 +383,12 @@
                     <dt>While you sign in</dt>
                     <dd>A password (kept only in scrambled form), a session record that includes your IP address and browser type while you are signed in, and a short-lived count of failed sign-in attempts.</dd>
                 </div>
+                <div class="data-row">
+                    <dt>Attachments</dt>
+                    <dd>If an office asks for proof, you may attach a photo (including a picture of yourself or your school ID), a scan, a PDF or Word file (up to 2 MB), or a link to a video you keep elsewhere. These can show personal details, such as your face, your name, or your ID number. The system stores the file or link, its name and size, and the date you sent it.</dd>
+                </div>
             </dl>
-            <p class="note">The system does not ask for health, family, financial, or other sensitive information. Your browser also remembers your light or dark theme choice on your own device.</p>
+            <p class="note">The system does not ask for health, family, financial, or other sensitive information. Attachments are optional. A picture of yourself, a photo of your school ID, or any other file you attach is personal information, so attach only what an office asks for, and do not attach anything else. Your browser also remembers your light or dark theme choice on your own device.</p>
         </section>
 
         <section class="block">
@@ -391,6 +396,7 @@
             <ul>
                 <li>To record which offices have cleared you for the school year.</li>
                 <li>To show you your clearance status and what each office requires.</li>
+                <li>To let an office check the proof it asked for, such as a picture of you or a photo of your school ID.</li>
                 <li>To produce your downloadable clearance form.</li>
                 <li>To email you when an office clears you or cannot clear you yet.</li>
                 <li>To keep your account secure.</li>
@@ -409,13 +415,14 @@
                 <li><strong>You</strong> can see your own record only.</li>
                 <li><strong>Each office</strong> can see the students it needs to clear: name, student number, course, section, and clearance status for that office.</li>
                 <li><strong>The Registrar</strong> can see every student's clearance status across all offices.</li>
+                <li><strong>Attachments</strong> can be opened only by you, the office you sent them to, and the Techlab Office. The Registrar sees an attachment only when it is the office you sent it to.</li>
                 <li><strong>The Techlab Office</strong> manages accounts, student imports, and school years.</li>
             </ul>
         </section>
 
         <section class="block">
             <h2><span class="num">5</span> Who else handles it</h2>
-            <p>Clearance emails are delivered through Google's Gmail service, so the message (your name, the office, the result, and any reason given) passes through Google. The system runs on the Vercel hosting service, and its data is stored in the TiDB Cloud database service. Both work on the school's behalf, and the data is kept in Singapore. We do not share your information with anyone else.</p>
+            <p>Clearance emails are delivered through Google's Gmail service, so the message (your name, the office, the result, and any reason given) passes through Google. The system runs on the Vercel hosting service, and its data is stored in the TiDB Cloud database service. Files you attach are kept in that same online database, not on a personal device or in a public folder. Both services work on the school's behalf, and the data is kept in Singapore. If you attach a link to a video, the system stores only the link. The video stays with the service you chose, such as Google Drive or YouTube, and that service's own privacy rules apply. We do not share your information with anyone else.</p>
         </section>
 
         <section class="block">
@@ -425,13 +432,14 @@
                 <li>New accounts start with a default password that must be changed at first sign-in.</li>
                 <li>Repeated wrong passwords temporarily block sign-in.</li>
                 <li>Each person can only open the pages that match their role.</li>
+                <li>Attachments have no public address. The system checks who is signed in before it opens any file.</li>
             </ul>
             <p class="note">No system can promise perfect security. Please keep your password private and sign out on shared computers.</p>
         </section>
 
         <section class="block">
             <h2><span class="num">7</span> How long we keep it</h2>
-            <p>Clearance records stay with the school year they belong to, so past school years remain available. How long records are kept overall follows the policy of STI College Valencia. Details that were imported by mistake can be removed by the Techlab Office.</p>
+            <p>Clearance records stay with the school year they belong to, so past school years remain available. How long records are kept overall follows the policy of STI College Valencia. Details that were imported by mistake can be removed by the Techlab Office. You can remove an attachment yourself until the office clears you. To have an attachment removed after that, contact the Techlab Office.</p>
         </section>
 
         <section class="block">
